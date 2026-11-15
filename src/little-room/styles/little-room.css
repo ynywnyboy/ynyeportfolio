@@ -1,0 +1,51 @@
+/* Our Little Room — the house. Only transform/opacity are animated, and everything stops under reduced motion. */
+.lr-stage { touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.lr-stage[data-editing='1'] { touch-action: none; }
+
+.lr-door .lr-leaf { transform-box: fill-box; transform-origin: left center; transition: transform .45s cubic-bezier(.22, 1, .36, 1); }
+.lr-door[data-open='1'] .lr-leaf { transform: scaleX(.14); }
+
+/* the character is a pixel sprite: frames are swapped by the walker, so there is nothing to tween. Idle = a tiny 2-step breath. */
+.lr-char:not(.walk) .lr-idle { animation: lr-breathe 1.6s steps(1, end) infinite; }
+@keyframes lr-breathe { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-1.5px) } }
+.lr-sprite-preview { image-rendering: crisp-edges; image-rendering: pixelated; }
+
+.lr-pad {
+  display: grid; place-items: center; width: 3.1rem; height: 3.1rem; border-radius: 9999px;
+  background: rgba(255, 255, 255, .78); color: #d9577a; box-shadow: 0 4px 14px rgba(190, 90, 120, .22);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); touch-action: none; transition: transform .12s ease, background .12s ease;
+}
+.lr-pad:active { transform: scale(.92); background: #fff; }
+.dark .lr-pad { background: rgba(255, 255, 255, .16); color: #ffd6e0; }
+
+/* garden: gentle sway, a pop when a plant grows, drifting clouds, butterflies. Transform/opacity only. */
+.lr-sway { animation: lr-sway 4.5s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes lr-sway { 0%, 100% { transform: rotate(-2.2deg) } 50% { transform: rotate(2.2deg) } }
+.lr-leaves { animation: lr-leaves 6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes lr-leaves { 0%, 100% { transform: rotate(-.8deg) } 50% { transform: rotate(.8deg) } }
+.lr-pop { animation: lr-pop .7s cubic-bezier(.2, 1.4, .4, 1) both; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes lr-pop { from { transform: scale(.55); opacity: .4 } to { transform: scale(1); opacity: 1 } }
+.lr-drops ellipse { animation: lr-drop 1s ease-in both; opacity: 0; }
+@keyframes lr-drop { 0% { transform: translateY(0); opacity: 0 } 15% { opacity: 1 } 100% { transform: translateY(54px); opacity: 0 } }
+.lr-cloud { animation: lr-cloud 40s ease-in-out infinite alternate; }
+@keyframes lr-cloud { from { translate: -14px 0 } to { translate: 14px 0 } }
+.lr-ripple { animation: lr-ripple 3s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes lr-ripple { from { transform: scale(.5); opacity: .8 } to { transform: scale(1.6); opacity: 0 } }
+.lr-flutter { animation-duration: 11s; animation-iteration-count: infinite; animation-timing-function: ease-in-out; }
+.lr-flutter1 { animation-name: lr-f1 } .lr-flutter2 { animation-name: lr-f2; animation-duration: 14s } .lr-flutter3 { animation-name: lr-f3; animation-duration: 9s }
+@keyframes lr-f1 { 0%, 100% { transform: translate(0, 0) } 25% { transform: translate(90px, -30px) } 50% { transform: translate(150px, 20px) } 75% { transform: translate(60px, 40px) } }
+@keyframes lr-f2 { 0%, 100% { transform: translate(0, 0) } 30% { transform: translate(-110px, 25px) } 60% { transform: translate(-40px, -35px) } }
+@keyframes lr-f3 { 0%, 100% { transform: translate(0, 0) } 50% { transform: translate(-130px, 30px) } }
+.lr-wing { animation: lr-flap .35s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 50%; }
+@keyframes lr-flap { from { transform: scaleX(1) } to { transform: scaleX(.35) } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lr-sway, .lr-leaves, .lr-pop, .lr-drops ellipse, .lr-cloud, .lr-ripple, .lr-flutter, .lr-wing { animation: none !important; }
+  .lr-drops { display: none; }
+  .lr-door .lr-leaf { transition: none; }
+  .lr-char .lr-idle { animation: none !important; }
+}
+
+/* character creator: a little pixel "stage" under the preview */
+.lr-stage-bg { background-color: #efe0e6; background-image: linear-gradient(45deg, #e4d0da 25%, transparent 25%, transparent 75%, #e4d0da 75%), linear-gradient(45deg, #e4d0da 25%, transparent 25%, transparent 75%, #e4d0da 75%); background-size: 24px 24px; background-position: 0 0, 12px 12px; border: 3px solid #5b4466; box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #fff; border-radius: 6px; }
+.dark .lr-stage-bg { background-color: #3a2f4d; background-image: linear-gradient(45deg, #43385a 25%, transparent 25%, transparent 75%, #43385a 75%), linear-gradient(45deg, #43385a 25%, transparent 25%, transparent 75%, #43385a 75%); border-color: #d9c7ee; }

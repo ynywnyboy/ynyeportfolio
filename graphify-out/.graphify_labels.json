@@ -1,0 +1,21 @@
+{
+  "0": "Auth & Context",
+  "1": "UI Layouts",
+  "2": "Memory Management",
+  "4": "Door Transitions",
+  "5": "Little Room Components",
+  "6": "Character & Sprites",
+  "7": "Garden & Plants",
+  "8": "Wheel History",
+  "12": "App Core",
+  "14": "Settings & Config",
+  "15": "Navigation & Routing",
+  "17": "BucketList",
+  "18": "Notebook",
+  "20": "Particle Systems",
+  "22": "Theme & Appearance",
+  "23": "Door Logic",
+  "33": "Walker Logic",
+  "34": "Room Panels",
+  "35": "Character Sprites"
+}

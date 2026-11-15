@@ -1,0 +1,235 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&family=Dancing+Script:wght@500;700&family=Press+Start+2P&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --accent: #e8899f;
+  --blush-50: 255 245 247;
+  --blush-100: 255 228 234;
+  --blush-200: 253 201 214;
+  --blush-300: 247 163 184;
+  --blush-400: 238 123 154;
+  --blush-500: 232 137 159;
+  --blush-600: 207 95 126;
+  --blush-700: 184 107 138;
+  --blush-800: 142 77 106;
+  --blush-900: 107 58 82;
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --olw-bg: none;
+  --olw-dim-light: transparent;
+  --olw-dim-dark: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cream-50 font-sans text-stone-700 antialiased;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgb(var(--blush-200) / 0.5) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(221, 205, 245, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(251, 241, 230, 0.9) 0%, transparent 60%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+.dark body {
+  @apply bg-night-950 text-stone-200;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgb(var(--blush-600) / 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 90% 20%, rgba(150, 110, 200, 0.18) 0%, transparent 50%);
+}
+
+@layer components {
+  .card {
+    @apply rounded-3xl bg-white/80 shadow-soft backdrop-blur dark:bg-night-800/80;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200
+           hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50
+           focus:outline-none focus-visible:ring-2 focus-visible:ring-blush-400 focus-visible:ring-offset-2;
+  }
+  .btn-primary {
+    @apply btn bg-gradient-to-r from-blush-400 to-blush-600 text-white shadow-soft hover:shadow-dreamy;
+  }
+  .btn-ghost {
+    @apply btn bg-white/70 text-stone-700 hover:bg-white dark:bg-white/10 dark:text-stone-100 dark:hover:bg-white/20;
+  }
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600;
+  }
+  .input {
+    @apply w-full rounded-2xl border border-blush-200 bg-white/90 px-4 py-2.5 text-sm text-stone-800
+           placeholder:text-stone-400 focus:border-blush-400 focus:outline-none focus:ring-2 focus:ring-blush-200
+           dark:border-white/10 dark:bg-night-900/60 dark:text-stone-100 dark:focus:ring-blush-600/40;
+  }
+  .label {
+    @apply mb-1 block text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400;
+  }
+  .h-script {
+    @apply font-script text-blush-500;
+  }
+  .h-display {
+    @apply font-display text-stone-800 dark:text-stone-50;
+  }
+
+  /* Navigation section cards */
+  .nav-card {
+    @apply relative flex flex-col items-center gap-3 rounded-3xl border border-white/60 bg-white/70 p-6 text-center shadow-soft backdrop-blur-sm transition-all duration-300
+           hover:-translate-y-1.5 hover:shadow-dreamy dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10;
+  }
+
+  /* Marquee track */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+  }
+
+  /* Digital clock segments */
+  .clock-digit {
+    @apply font-mono tabular-nums leading-none;
+  }
+
+  /* Floating decoration */
+  .float-deco {
+    @apply absolute pointer-events-none select-none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+html[data-reduce-motion='on'] { scroll-behavior: auto; }
+html[data-reduce-motion='on'] *, html[data-reduce-motion='on'] *::before, html[data-reduce-motion='on'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ---- Background ---------- */
+html[data-bg='custom'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--olw-bg);
+}
+html[data-bg='custom'] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--olw-dim-light);
+}
+html[data-bg='custom'].dark body::after { background: var(--olw-dim-dark); }
+
+/* ---- Card styles -------- */
+html[data-card='rounded'] .card { border-radius: 2rem; }
+html[data-card='scrapbook'] .card {
+  border-radius: 0.6rem;
+  border: 2px dashed rgb(var(--blush-300) / 0.9);
+  background-color: rgb(255 252 244 / 0.94);
+  box-shadow: 4px 5px 0 rgb(var(--blush-200) / 0.9);
+  backdrop-filter: none;
+}
+html[data-card='scrapbook'].dark .card { background-color: rgb(40 33 52 / 0.94); border-color: rgb(var(--blush-500) / 0.5); box-shadow: 4px 5px 0 rgb(var(--blush-600) / 0.3); }
+html[data-card='polaroid'] .card {
+  border-radius: 4px;
+  border: 10px solid #fff;
+  border-bottom-width: 26px;
+  background-color: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  backdrop-filter: none;
+}
+html[data-card='polaroid'].dark .card { border-color: #2b2436; background-color: #2b2436; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
+html[data-card='glass'] .card {
+  background-color: rgb(255 255 255 / 0.34);
+  border: 1px solid rgb(255 255 255 / 0.6);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+html[data-card='glass'].dark .card { background-color: rgb(255 255 255 / 0.07); border-color: rgb(255 255 255 / 0.14); }
+html[data-card='minimal'] .card {
+  border-radius: 0.75rem;
+  border: 1px solid rgb(var(--blush-200));
+  background-color: rgb(255 255 255 / 0.92);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+html[data-card='minimal'].dark .card { background-color: rgb(29 24 38 / 0.92); border-color: rgb(255 255 255 / 0.1); }
+
+html[data-shadow='none'] .card { box-shadow: none; }
+html[data-shadow='dreamy'] .card { box-shadow: 0 24px 60px -18px rgba(150, 110, 200, 0.45); }
+html[data-glow='on'] .card { box-shadow: 0 0 0 1.5px rgb(var(--blush-300) / 0.85), 0 0 26px rgb(var(--blush-400) / 0.4); }
+
+.tape::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 70px;
+  height: 22px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgb(var(--blush-200) / 0.7);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.envelope-flap {
+  transform-origin: top center;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* LED marquee scroll animation */
+@keyframes led-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.hero-photo-float {
+  animation: heroFloat 6s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--rot, 0deg)); }
+}
+
+/* Heartbeat for the title heart */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+.animate-heartbeat { animation: heartbeat 1.4s ease-in-out infinite; }
+
+/* xs breakpoint (extra small screens) */
+@media (min-width: 420px) {
+  .xs\:text-base { font-size: 1rem; line-height: 1.5rem; }
+}
+
+/* Swing animation for mobile ID badge lanyard */
+@keyframes swing {
+  0% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+  100% { transform: rotate(-8deg); }
+}
+
+.animate-swing {
+  animation: swing 2s ease-in-out infinite;
+}
+
+/* Memory conveyor - continuous downward scroll */
+@keyframes memory-conveyor {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-66.666%); }
+}

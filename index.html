@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#fff5f7" />
+    <title>Our Little World</title>
+    <script>
+      // Avoid any flash of the default look: restore a cached COPY of the last shared theme
+      // (light/dark, accent palette, background, fonts, card style) before first paint.
+      // The real, shared Supabase theme replaces it as soon as it loads.
+      try {
+        var root = document.documentElement;
+        var c = JSON.parse(localStorage.getItem('olw-theme-cache') || 'null');
+        if (c) {
+          var dark = c.mode === 'dark' || (c.mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) root.classList.add('dark');
+          var snap = c.snap;
+          if (snap) {
+            for (var k in snap.vars) root.style.setProperty(k, snap.vars[k]);
+            for (var a in snap.attrs) root.setAttribute(a, snap.attrs[a]);
+            (snap.links || []).forEach(function (href) {
+              var l = document.createElement('link');
+              l.rel = 'stylesheet'; l.href = href; l.setAttribute('data-olw-font', href);
+              document.head.appendChild(l);
+            });
+          }
+        }
+        var p = JSON.parse(localStorage.getItem('olw-a11y') || 'null');
+        var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        root.setAttribute('data-reduce-motion', (sys || (p && p.reduceMotion)) ? 'on' : 'off');
+      } catch (e) {}
+    </script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💞</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
