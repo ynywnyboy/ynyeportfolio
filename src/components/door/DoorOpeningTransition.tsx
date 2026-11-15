@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useReducedMotion } from '../../lib/a11y'
 import { Heart, Volume2, VolumeX } from 'lucide-react'
 import { LittleWorldDoor } from './LittleWorldDoor'
 import { AmbientParticles } from './DoorParticles'

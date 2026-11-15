@@ -224,12 +224,21 @@ const SCALARS: (keyof Scalars)[] = ['wall', 'pattern', 'floor', 'lights', 'scene
 export function diffRoom(base: RoomState, next: RoomState): RoomPatch {
   const patch: RoomPatch = {}
   for (const k of SCALARS) {
-    if (JSON.stringify(base[k]) !== JSON.stringify(next[k])) (patch.set ??= {})[k] = next[k] as never
+    if (JSON.stringify(base[k]) !== JSON.stringify(next[k])) {
+      if (!patch.set) patch.set = {}
+      patch.set[k] = next[k] as never
+    }
   }
   for (const id of new Set([...Object.keys(base.items), ...Object.keys(next.items)])) {
     const a = base.items[id], b = next.items[id]
-    if (!b) (patch.items ??= {})[id] = null
-    else if (!a || JSON.stringify(a) !== JSON.stringify(b)) (patch.items ??= {})[id] = b
+    if (!b) {
+      if (!patch.items) patch.items = {}
+      patch.items[id] = null
+    }
+    else if (!a || JSON.stringify(a) !== JSON.stringify(b)) {
+      if (!patch.items) patch.items = {}
+      patch.items[id] = b
+    }
   }
   return patch
 }

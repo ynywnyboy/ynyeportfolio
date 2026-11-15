@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import { useReducedMotion } from 'motion/react'
+import { useReducedMotion } from '../lib/a11y'
 import { CalendarDays, ChevronRight, Film, GitBranch, RotateCcw, Sparkles, X } from 'lucide-react'
 import type { Media } from '../lib/types'
 import { publicUrl } from '../lib/storage'

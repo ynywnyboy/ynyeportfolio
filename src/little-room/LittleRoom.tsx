@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useReducedMotion } from '../lib/a11y'
 import { createPortal } from 'react-dom'
 import { Cat, Check, CloudOff, Loader2, Maximize2, Minimize2, Moon, Pencil, Play, Redo2, Shirt, ShieldCheck, ShieldOff, Sparkles, Sun, Sunset, Undo2, ZoomIn, ZoomOut } from 'lucide-react'
 import { useSite } from '../context/SiteContext'
