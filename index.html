@@ -46,7 +46,28 @@
     />
   </head>
   <body>
+    <!-- EARLIEST POSSIBLE JS TEST — document.write fires BEFORE any other script -->
+    <script>document.write('<div id="__e" style="position:fixed;top:0;left:0;right:0;z-index:999999;background:#ff3b30;color:#fff;font:bold 16px monospace;padding:12px;text-align:center;">JS:OK '+Date.now()+'ms</div>');</script>
     <div id="root"></div>
+    <script>
+      // Runs AFTER React mounts — removes the red diagnostic bar.
+      // If this never fires (stuck red bar stays), React failed to mount.
+      try {
+        var _m = new MutationObserver(function(mutations) {
+          for (var i = 0; i < mutations.length; i++) {
+            for (var j = 0; j < mutations[i].addedNodes.length; j++) {
+              if (mutations[i].addedNodes[j].id === 'root') {
+                var bar = document.getElementById('__e');
+                if (bar) bar.remove();
+                setTimeout(function(){document.getElementById('__e') && document.getElementById('__e').remove()}, 2000);
+                _m.disconnect();
+              }
+            }
+          }
+        });
+        _m.observe(document.body, { childList: true, subtree: true });
+      } catch(e) {}
+    </script>
     <!-- Debug overlay: visible only when no-js-render has class removed; captures errors before React -->
     <div id="__debug-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,.85);color:#ff6b6b;font-family:monospace;font-size:13px;padding:20px;overflow:auto;">
       <div style="max-width:600px;margin:0 auto;">
