@@ -9,6 +9,8 @@ import { PlayerProvider } from './context/PlayerContext'
 import { DoorProvider } from './context/DoorContext'
 import './index.css'
 import 'leaflet/dist/leaflet.css'
+import eruda from 'eruda'
+eruda.init()
 
 // Polyfill for Canvas roundRect (iOS < 15.4)
 if (typeof window !== 'undefined' && window.CanvasRenderingContext2D && !CanvasRenderingContext2D.prototype.roundRect) {
