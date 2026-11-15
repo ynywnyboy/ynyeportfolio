@@ -33,10 +33,18 @@ function Protected({ children }: { children: JSX.Element }) {
 function NotConfigured() {
   return (
     <div className="mx-auto mt-24 max-w-xl rounded-3xl bg-white p-8 text-stone-700 shadow-soft">
-      <h1 className="font-display text-2xl">Almost there 💞</h1>
+      <h1 className="font-display text-2xl">Not configured 💞</h1>
       <p className="mt-3 text-sm">
-        Supabase isn't connected yet. Create <code>.env.local</code> from <code>.env.example</code>, add your project URL and
-        public anon key, run <code>supabase/schema.sql</code>, then restart <code>npm run dev</code>. Full steps are in the README.
+        This page needs environment variables set up before it can run.
+        In production (Cloudflare Pages), these must be configured in the
+        Cloudflare dashboard under <strong>Environment variables</strong>:
+        <br /><br />
+        <code>VITE_SUPABASE_URL</code> — your Supabase project URL (e.g.{' '}
+        <code>https://xxxx.supabase.co</code>)
+        <br />
+        <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> — your anon/public key
+        <br /><br />
+        See <code>.env.example</code> for reference. Once set, redeploy to apply.
       </p>
     </div>
   )

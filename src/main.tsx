@@ -9,10 +9,8 @@ import { PlayerProvider } from './context/PlayerContext'
 import { DoorProvider } from './context/DoorContext'
 import './index.css'
 import 'leaflet/dist/leaflet.css'
-import eruda from 'eruda'
-eruda.init()
 
-// Global error catcher - shows red box on white screen
+// Global error handlers FIRST — fire before anything else crashes
 window.addEventListener('error', (e) => {
   const msg = e.message || String(e.error);
   const stack = e.error?.stack || '';
@@ -23,6 +21,13 @@ window.addEventListener('unhandledrejection', (e) => {
   const stack = e.reason?.stack || '';
   document.body.innerHTML = `<div style="padding:20px;color:#fff;background:#c00;font-family:monospace;font-size:14px;white-space:pre-wrap;max-width:100%;overflow:auto">Unhandled Promise Rejection:\n${msg}\n\n${stack}</div>`;
 });
+
+// Eruda debug console — conditional so it cannot block React mount
+if (typeof window !== 'undefined') {
+  try {
+    import('eruda').then((mod) => mod.default.init()).catch(() => {});
+  } catch (_) { /* ignore */ }
+}
 
 // Polyfill for Canvas roundRect (iOS < 15.4)
 if (typeof window !== 'undefined' && window.CanvasRenderingContext2D && !CanvasRenderingContext2D.prototype.roundRect) {
