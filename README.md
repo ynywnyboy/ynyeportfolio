@@ -112,3 +112,4 @@ in Site settings → Environment variables. `public/_redirects` makes page refre
 - **Memories**: files are previewed on selection before upload; iPhone HEIC photos only display in Safari — export as JPEG.
 - **Music**: tries to autoplay once; if the browser blocks it a "Tap to play our music" button appears. Last song and position are remembered per device.
 - **Love Wheel**: `/love-wheel` (signed-in only). Sound effects are generated in the browser (no audio files).
+# ynyeportfolio
