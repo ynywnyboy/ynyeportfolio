@@ -22,6 +22,17 @@ window.addEventListener('unhandledrejection', (e) => {
   document.body.innerHTML = `<div style="padding:20px;color:#fff;background:#c00;font-family:monospace;font-size:14px;white-space:pre-wrap;max-width:100%;overflow:auto">Unhandled Promise Rejection:\n${msg}\n\n${stack}</div>`;
 });
 
+// Persistent client logs for iOS debugging — expose via window.__OLW_LOGS
+const __OLW_LOGS: string[] = []
+const origError = console.error
+console.error = (...args: unknown[]) => {
+  __OLW_LOGS.push(args.map(String).join(' '))
+  origError.apply(console, args)
+}
+window.addEventListener('error', (e) => __OLW_LOGS.push(e.message))
+window.addEventListener('unhandledrejection', (e) => __OLW_LOGS.push(e.reason?.message || String(e.reason)))
+;(window as any).__OLW_LOGS = __OLW_LOGS
+
 // Eruda debug console — conditional so it cannot block React mount
 if (typeof window !== 'undefined') {
   try {
