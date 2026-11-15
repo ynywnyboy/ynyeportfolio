@@ -46,27 +46,50 @@
     />
   </head>
   <body>
-    <!-- EARLIEST POSSIBLE JS TEST — document.write fires BEFORE any other script -->
-    <script>document.write('<div id="__e" style="position:fixed;top:0;left:0;right:0;z-index:999999;background:#ff3b30;color:#fff;font:bold 16px monospace;padding:12px;text-align:center;">JS:OK '+Date.now()+'ms</div>');</script>
+    <!-- EARLIEST POSSIBLE JS TEST — what you see FIRST confirms browser is working -->
+    <div id="__diagnose" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;color:#0f0;font-family:monospace;font-size:14px;padding:16px;text-align:left;overflow:scroll;z-index:999999;display:flex;flex-direction:column;gap:8px">
+      <div style="font-weight:bold;font-size:20px;border-bottom:2px solid #0f0;padding-bottom:8px;margin-bottom:12px">📱 DIAGNOSTIC PAGE</div>
+      <div id="__step1" style="font-size:16px;font-weight:bold;color:#ffff00">STEP 1: Check you see this black box</div>
+      <div id="__vite" style="color:#0f0">vite detect: ...</div>
+      <div id="__scroll" style="color:#0f0">scroll: on</div>
+      <div id="__touch" style="color:#0f0">touch API: ...</div>
+
+      <div style="margin-top:20px;padding:12px;background:#111;border:1px solid #0f0">
+        <div style="color:#ffff00;margin-bottom:8px">STEP 2: Open Safari DevTools (if possible:</div>
+        <div style="font-size:12px;color:#fff">- Safari on Mac: Develop menu → [your iPhone]</div>
+        <div style="font-size:12px;color:#fff">- iPhone only: tap Reload without Content Blockers and check top bar for</div>
+        <div style="color:#ffff00;font-weight:bold;margin-top:8px">▶️ RED BAR saying "JS:OK"</div>
+      </div>
+
+      <div style="margin-top:20px;padding:12px;background:#111;border:1px solid #0f0">
+        <div style="color:#ffff00">STEP 3: Test if site loads at all:</div>
+        <a href="https://ynyeportfolio.pages.dev" target="_blank" style="color:#00ffff;font-size:14px;text-decoration:underline">Open https://ynyeportfolio.pages.dev in same/new tab</a>
+
+        <div style="margin-top:12px">
+          <div style="color:#ffff00">STEP 4: Contact me with answers:</div>
+          <div style="font-size:13px;color:#fff;margin-top:8px">
+            • Does apple.com load on this phone?<br/>
+            • If https://ynyeportfolio.pages.dev shows a <span style="color:#ffff00;font-weight:bold">RED BAR with JS:OK?</span><br/>
+            • If https://ynyeportfolio.pages.dev shows <span style="color:#ffff00;font-weight:bold">NO red bar</span>, what do you see instead?
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;font-size:12px;color:#888">This diagnostic loads instantly and requires no internet for you to see it. No browser detection works without JavaScript.</div>
+    </div>
     <div id="root"></div>
     <script>
-      // Runs AFTER React mounts — removes the red diagnostic bar.
-      // If this never fires (stuck red bar stays), React failed to mount.
-      try {
-        var _m = new MutationObserver(function(mutations) {
-          for (var i = 0; i < mutations.length; i++) {
-            for (var j = 0; j < mutations[i].addedNodes.length; j++) {
-              if (mutations[i].addedNodes[j].id === 'root') {
-                var bar = document.getElementById('__e');
-                if (bar) bar.remove();
-                setTimeout(function(){document.getElementById('__e') && document.getElementById('__e').remove()}, 2000);
-                _m.disconnect();
-              }
-            }
-          }
-        });
-        _m.observe(document.body, { childList: true, subtree: true });
-      } catch(e) {}
+      // Run AFTER React to update diagnostic info
+      window.addEventListener('load', function(){
+        document.getElementById('__step1').textContent = 'STEP 1: ✓ User see this'
+        var vite = document.getElementById('__vite')
+        vite.textContent = 'vite detect: ' + (window.__vite_is_modern_browser ? 'YES 💚' : 'NO')
+        vite.style.color = window.__vite_is_modern_browser ? '#0f0' : '#f00'
+
+        var touch = document.getElementById('__touch')
+        touch.textContent = 'touch API: ' + ('ontouchstart' in window ? 'YES 📱' : 'NO')
+        touch.style.color = 'ontouchstart' in window ? '#0f0' : '#f00'
+      })
     </script>
     <!-- Debug overlay: visible only when no-js-render has class removed; captures errors before React -->
     <div id="__debug-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,.85);color:#ff6b6b;font-family:monospace;font-size:13px;padding:20px;overflow:auto;">
