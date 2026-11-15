@@ -45,8 +45,8 @@ export function useReducedMotion(): boolean {
     const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     if (!mq) return
     const on = () => setSystem(mq.matches)
-    mq.addEventListener('change', on)
-    return () => mq.removeEventListener('change', on)
+    if (mq.addEventListener) { mq.addEventListener('change', on) } else { mq.addListener(on) }
+    return () => { if (mq.removeEventListener) { mq.removeEventListener('change', on) } else { mq.removeListener(on) } }
   }, [])
   return system || reduceMotion
 }

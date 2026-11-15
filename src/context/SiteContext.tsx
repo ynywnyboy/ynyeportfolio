@@ -105,8 +105,8 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     if (theme.mode !== 'system') return
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
     const on = () => setSystemTick((n) => n + 1)
-    mq.addEventListener('change', on)
-    return () => mq.removeEventListener('change', on)
+    if (mq.addEventListener) { mq.addEventListener('change', on) } else { mq.addListener(on) }
+    return () => { if (mq.removeEventListener) { mq.removeEventListener('change', on) } else { mq.removeListener(on) } }
   }, [theme.mode])
 
   const flush: () => Promise<void> = useCallback(async () => {

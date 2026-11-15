@@ -152,8 +152,8 @@ export function Constellation({ items, onOpen }: { items: Media[]; onOpen: (m: M
     const mq = window.matchMedia?.('(max-width: 640px)')
     if (!mq) return
     const on = () => setNarrow(mq.matches)
-    mq.addEventListener('change', on)
-    return () => mq.removeEventListener('change', on)
+    if (mq.addEventListener) { mq.addEventListener('change', on) } else { mq.addListener(on) }
+    return () => { if (mq.removeEventListener) { mq.removeEventListener('change', on) } else { mq.removeListener(on) } }
   }, [])
 
   const sorted = useMemo(() => [...items].sort((a, b) => a.taken_at.localeCompare(b.taken_at) || a.id.localeCompare(b.id)), [items])
