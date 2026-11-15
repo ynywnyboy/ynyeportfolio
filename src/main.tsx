@@ -12,6 +12,18 @@ import 'leaflet/dist/leaflet.css'
 import eruda from 'eruda'
 eruda.init()
 
+// Global error catcher - shows red box on white screen
+window.addEventListener('error', (e) => {
+  const msg = e.message || String(e.error);
+  const stack = e.error?.stack || '';
+  document.body.innerHTML = `<div style="padding:20px;color:#fff;background:#c00;font-family:monospace;font-size:14px;white-space:pre-wrap;max-width:100%;overflow:auto">${msg}\n\n${stack}</div>`;
+});
+window.addEventListener('unhandledrejection', (e) => {
+  const msg = e.reason?.message || String(e.reason);
+  const stack = e.reason?.stack || '';
+  document.body.innerHTML = `<div style="padding:20px;color:#fff;background:#c00;font-family:monospace;font-size:14px;white-space:pre-wrap;max-width:100%;overflow:auto">Unhandled Promise Rejection:\n${msg}\n\n${stack}</div>`;
+});
+
 // Polyfill for Canvas roundRect (iOS < 15.4)
 if (typeof window !== 'undefined' && window.CanvasRenderingContext2D && !CanvasRenderingContext2D.prototype.roundRect) {
   CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r: number | number[]) {
