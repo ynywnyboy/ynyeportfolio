@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { motionFactor, type DecoKind, type MotionLevel } from '../lib/appearance'
-import { isLowEnd } from '../lib/perf'
-import { usePageVisible, useReducedMotion, useA11yPrefs } from '../lib/a11y'
+import { useReducedMotion } from '../lib/a11y'
 
 const HEART_GLYPHS = ['♥', '♡', '♥', '♡']
 const STAR_GLYPHS = ['✦', '✧', '★', '·']
@@ -24,16 +23,12 @@ interface Item { id: number; kind: DecoKind; glyph: string; left: number; size: 
 
 /**
  * Floating decorations (hearts, stars, flowers, petals, butterflies, bubbles, pixels).
- * CSS transform/opacity animations only. Scales down on weak devices, pauses while the tab is
- * hidden, and disappears entirely for reduced motion / "animation intensity: off".
+ * CSS transform/opacity animations only.
  */
 export function Particles({ enabled = true, kinds = ['hearts', 'stars'], motion = 'normal' }: { enabled?: boolean; kinds?: DecoKind[]; motion?: MotionLevel }) {
   const reduced = useReducedMotion()
-  const { pauseBackground } = useA11yPrefs()
-  const visible = usePageVisible()
   const factor = motionFactor(motion)
-  const base = isLowEnd() ? 9 : 22
-  const total = Math.min(48, Math.round(base * factor))
+  const total = Math.min(48, Math.round(22 * factor))
   const key = kinds.join(',')
 
   const items = useMemo<Item[]>(() => {
@@ -55,7 +50,7 @@ export function Particles({ enabled = true, kinds = ['hearts', 'stars'], motion 
     })
   }, [key, total])
 
-  if (!enabled || reduced || pauseBackground || factor === 0 || !items.length) return null
+  if (!enabled || reduced || factor === 0 || !items.length) return null
   const anim = (k: DecoKind) => (k === 'petals' ? 'animate-petalfall' : k === 'butterflies' ? 'animate-flutter' : k === 'pixels' ? 'animate-pixelrise' : 'animate-floaty')
   const color = (tone: number) => (tone === 0 ? '#c3a9ec' : 'var(--accent)')
 
@@ -71,7 +66,6 @@ export function Particles({ enabled = true, kinds = ['hearts', 'stars'], motion 
             lineHeight: 1,
             animationDuration: `${p.dur}s`,
             animationDelay: `${p.delay}s`,
-            animationPlayState: visible ? 'running' : 'paused',
             color: color(p.tone),
             opacity: 0.6,
             willChange: 'transform, opacity',

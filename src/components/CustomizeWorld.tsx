@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Check, Pencil, Copy, Trash2, Upload, RotateCcw, X, Save, Loader2 } from 'lucide-react'
 import { useSite } from '../context/SiteContext'
 import { DEFAULT_APPEARANCE, BG_PRESETS, THEME_PRESETS, DECO_KINDS, EFFECTS, HEADING_FONTS, BODY_FONTS, CARD_STYLES, MOTION_LEVELS, type Appearance, type SavedTheme, type DecoKind, type BgKind, type ThemePreset, type MotionLevel, type CardStyle, type ShadowLevel } from '../lib/appearance'
-import { useA11yPrefs, setA11yPrefs } from '../lib/a11y'
-import { useReducedMotion } from '../lib/a11y'
 import { validateFile, shrinkImage, normalizeImage, uploadFile } from '../lib/storage'
 import { errMsg } from '../lib/data'
 import { useToast } from '../context/ToastContext'
@@ -111,8 +109,7 @@ function ConfirmDialog({ open, title, message, confirmLabel, onCancel, onConfirm
 export function CustomizeWorld({ edit }: Props) {
   const toast = useToast()
   const { theme, updateTheme, appearance, setPreviewAppearance } = useSite()
-  const reduced = useReducedMotion()
-  const a11y = useA11yPrefs()
+  const reduced = false
   const saved = theme.appearance
   const [draft, setDraft] = useState<Appearance>(saved)
   const [savedThemes, setSavedThemes] = useState<SavedTheme[]>(theme.saved ?? [])
@@ -420,12 +417,7 @@ export function CustomizeWorld({ edit }: Props) {
         )}
       </Section>
 
-      {/* Comfort settings */}
-      <Section title="Just for this device" hint="Comfort settings. They stay on this device only — they are never shared with your partner and never change the shared theme.">
-        <Toggle on={a11y.reduceMotion} onChange={(reduceMotion) => setA11yPrefs({ reduceMotion })} label="Reduce motion (also follows your device's own setting)" />
-        <Toggle on={a11y.pauseBackground} onChange={(pauseBackground) => setA11yPrefs({ pauseBackground })} label="Hide animated backgrounds & floating decorations" />
-      </Section>
-
+      
       {/* Floating action bar — fixed at bottom, cleared properly */}
       <AnimatePresence>
         {dirty && (

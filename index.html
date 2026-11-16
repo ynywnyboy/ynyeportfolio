@@ -26,9 +26,6 @@
             });
           }
         }
-        var p = JSON.parse(localStorage.getItem('olw-a11y') || 'null');
-        var sys = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        root.setAttribute('data-reduce-motion', (sys || (p && p.reduceMotion)) ? 'on' : 'off');
       } catch (e) {}
     </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💞</text></svg>" />
@@ -47,49 +44,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script>
-      // Runs in plain JS BEFORE any module script — survives React crash.
-      // Captures real JS errors only. Normal console.log/info/fetch noise is NOT shown.
-      (function () {
-        var sid = sessionStorage.getItem('__olw-debug-sid')
-        if (!sid) {
-          sid = Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
-          sessionStorage.setItem('__olw-debug-sid', sid)
-        }
-        var LOG_KEY = '__olw-debug-' + sid
-        try { localStorage.removeItem(LOG_KEY) } catch (_) {}
-        var buf = []
-        function flush() {
-          try { localStorage.setItem(LOG_KEY, JSON.stringify(buf)) } catch (_) {}
-        }
-        function stamp() { return '[' + performance.now().toFixed(1) + 'ms]' }
-        // Capture real JS errors only — not console.log/info/warn
-        ;['error'].forEach(function(m){
-          var orig = console[m]
-          console[m] = function(){ buf.push(stamp()+' '+Array.from(arguments).map(String).join(' ')); flush(); try{orig.apply(console,arguments)}catch(e){} }
-        })
-        // Global JS errors
-        window.addEventListener('error', function(e){
-          buf.push(stamp()+' ERROR: '+e.message)
-          if(e.error && e.error.stack) buf.push(e.error.stack)
-          flush()
-        })
-        window.addEventListener('unhandledrejection', function(e){
-          buf.push(stamp()+' REJECT: '+((e.reason&&e.reason.message)||String(e.reason)))
-          flush()
-        })
-        // Show overlay only if there were actual errors from this session
-        setTimeout(function(){
-          if(buf.length > 0){
-            var pre = document.getElementById('__debug-log')
-            if(pre){
-              pre.textContent = buf.join('\n')
-              pre.style.display = 'block'
-            }
-          }
-        }, 50)
-      })()
-    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

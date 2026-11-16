@@ -7,7 +7,7 @@ import {
 } from '../lib/theme'
 import { applyAppearance, DEFAULT_APPEARANCE, type Appearance } from '../lib/appearance'
 import { publicUrl } from '../lib/storage'
-import { useA11yPrefs, useReducedMotion } from '../lib/a11y'
+import { useReducedMotion } from '../lib/a11y'
 import type { Settings, Bio, Album, Media } from '../lib/types'
 import { useAuth } from './AuthContext'
 import { useToast } from './ToastContext'
@@ -79,7 +79,6 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   const shared = useMemo(() => sanitizeTheme(settings?.theme ?? readThemeCache() ?? FALLBACK_THEME), [settings?.theme])
   const [preview, setPreview] = useState<Appearance | null>(null)
   const reduced = useReducedMotion()
-  const a11y = useA11yPrefs()
   const theme: ThemeValue = useMemo(() => {
     const merged = { ...shared, ...pending }
     // Visitors (not signed in) can't change the shared theme; they may pick light/dark for themselves.
@@ -183,7 +182,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
     updateTheme,
     appearance,
     setPreviewAppearance: setPreview,
-    motionAllowed: !reduced && !a11y.pauseBackground,
+    motionAllowed: !reduced,
   }
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
