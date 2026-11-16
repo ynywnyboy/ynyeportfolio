@@ -229,7 +229,7 @@ function MemoryConveyor({ images, config }: {
 
   if (reduced || !images.length || batch.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-2 p-1 max-w-[380px]" style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}>
+      <div className="grid grid-cols-2 gap-4 p-2 max-w-[380px]" style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}>
         {config.map((cfg, i) => (
           <FloatingPhotoCard
             key={`static-${i}`}
@@ -244,18 +244,20 @@ function MemoryConveyor({ images, config }: {
     )
   }
 
-  // 3 identical copies → CSS animates yPercent 0→100, instant snap-back is invisible
+  // 3 identical copies → CSS animates yPercent 0→100, instant snap-back is invisible.
+  // Each card is an independent tile: own container, own spacing, isolated transform.
   const tripled = [...batch, ...batch, ...batch]
 
   return (
     <div className="relative overflow-hidden rounded-2xl" style={{ minHeight: 380 }}>
       <div
-        className="grid grid-cols-2 gap-2 p-1 max-w-[380px]"
+        className="grid grid-cols-2 gap-5 p-2 max-w-[380px]"
         style={{
           width: 'fit-content',
           marginLeft: 'auto',
           marginRight: 'auto',
           animation: 'memory-conveyor 8s linear infinite',
+          willChange: 'transform',
         }}
       >
         {tripled.map((img, i) => {
@@ -268,13 +270,14 @@ function MemoryConveyor({ images, config }: {
                 width: cfg.w + 8,
                 height: cfg.h + 8,
                 backgroundColor: '#ffffff',
+                willChange: 'transform',
               }}
             >
               {img ? (
                 <SafeImage
                   src={publicUrl(img.storage_path)}
                   alt={img.caption || ''}
-                  className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blush-200/60 to-lilac-200/60 dark:from-night-700 dark:to-night-600">

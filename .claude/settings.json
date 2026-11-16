@@ -2,6 +2,29 @@
   "enabledPlugins": {
     "ui-ux-pro-max@ui-ux-pro-max-skill": true
   },
+  "defaultMode": "acceptEdits",
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git checkout:*)",
+      "Bash(git branch:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run preview:*)",
+      "Bash(npm install:*)",
+      "Bash(npm ci:*)",
+      "Bash(npm i:*)",
+      "Bash(graphify:*)",
+      "Bash(tsc:*)",
+      "Bash(vite:*)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
