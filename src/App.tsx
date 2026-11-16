@@ -56,7 +56,14 @@ function PageSkeleton() {
 
 export default function App() {
   useEffect(() => { syncServerClock() }, [])
-  if (!isConfigured) return <NotConfigured />
+  if (!isConfigured) {
+    return (
+      <div style={{minHeight:'100vh',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',padding:24,background:'#fff5f7',textAlign:'center'}}>
+        <h1 style={{fontFamily:'system-ui',fontSize:'24px',fontWeight:600,color:'#1e293b',marginBottom:16}}>Not configured 💞</h1>
+        <p style={{fontFamily:'system-ui',fontSize:'14px',color:'#64748b'}}>Environment variables missing. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in Cloudflare and redeploy.</p>
+      </div>
+    )
+  }
   return (
     <Routes>
       <Route element={<Layout />}>
