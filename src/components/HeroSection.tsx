@@ -44,11 +44,11 @@ function FloatingPhotoCard({ config, img, index, visible, className }: {
   if (reduced || !visible) {
     return (
       <div
-        className={`overflow-hidden rounded-2xl shadow-lg ${className || ''}`}
-        style={{ width: config.w, height: config.h, transform: `rotate(${config.rot}deg)` }}
+        className="rounded-2xl shadow-lg overflow-hidden"
+        style={{ width: config.w + 8, height: config.h + 8, backgroundColor: '#ffffff', transform: `rotate(${config.rot}deg)` }}
       >
         {img ? (
-          <SafeImage src={publicUrl(img.storage_path)} alt={img.caption || ''} className="h-full w-full object-cover" />
+          <SafeImage src={publicUrl(img.storage_path)} alt={img.caption || ''} className="h-full w-full object-contain" />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blush-200/60 to-lilac-200/60 dark:from-night-700 dark:to-night-600">
             <Heart className="h-5 w-5 text-blush-300/60 dark:text-blush-400/40" />
@@ -63,8 +63,8 @@ function FloatingPhotoCard({ config, img, index, visible, className }: {
       initial={{ opacity: 0, scale: 0.82, y: 24, x: -30 }}
       animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
       transition={{ delay: entry, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group transition-shadow hover:shadow-xl ${className || ''}`}
-      style={{ width: config.w, height: config.h, transform: `rotate(${config.rot}deg)` }}
+      className="relative rounded-2xl shadow-lg cursor-pointer group transition-shadow hover:shadow-xl overflow-hidden"
+      style={{ width: config.w + 8, height: config.h + 8, backgroundColor: '#ffffff', transform: `rotate(${config.rot}deg)` }}
     >
       {/* Continuous independent float */}
       <motion.div
@@ -79,7 +79,7 @@ function FloatingPhotoCard({ config, img, index, visible, className }: {
         style={{ transformStyle: 'preserve-3d' }}
       >
         {img ? (
-          <SafeImage src={publicUrl(img.storage_path)} alt={img.caption || ''} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          <SafeImage src={publicUrl(img.storage_path)} alt={img.caption || ''} className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105" />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blush-200/60 to-lilac-200/60 dark:from-night-700 dark:to-night-600">
             <Heart className="h-5 w-5 text-blush-300/60 dark:text-blush-400/40" />
@@ -229,7 +229,7 @@ function MemoryConveyor({ images, config }: {
 
   if (reduced || !images.length || batch.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-1 sm:gap-1 lg:gap-1.5 max-w-[360px]" style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}>
+      <div className="grid grid-cols-2 gap-2 p-1 max-w-[380px]" style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}>
         {config.map((cfg, i) => (
           <FloatingPhotoCard
             key={`static-${i}`}
@@ -250,7 +250,7 @@ function MemoryConveyor({ images, config }: {
   return (
     <div className="relative overflow-hidden rounded-2xl" style={{ minHeight: 380 }}>
       <div
-        className="grid grid-cols-2 gap-1 sm:gap-1 lg:gap-1.5 max-w-[360px]"
+        className="grid grid-cols-2 gap-2 p-1 max-w-[380px]"
         style={{
           width: 'fit-content',
           marginLeft: 'auto',
@@ -263,8 +263,12 @@ function MemoryConveyor({ images, config }: {
           return (
             <div
               key={`${img?.id ?? 'empty'}-${i}`}
-              className="overflow-hidden rounded-2xl shadow-md hover:shadow-lg transition-shadow"
-              style={{ width: cfg.w, height: cfg.h }}
+              className="rounded-2xl shadow-md hover:shadow-lg transition-shadow"
+              style={{
+                width: cfg.w + 8,
+                height: cfg.h + 8,
+                backgroundColor: '#ffffff',
+              }}
             >
               {img ? (
                 <SafeImage
