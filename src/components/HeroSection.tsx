@@ -234,7 +234,7 @@ function aspectRatio(cfg: PhotoConfig): string {
 
   if (reduced || !images.length || batch.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-6 p-3 w-fit mx-auto">
+      <div className="grid grid-cols-2 gap-2 w-fit mx-auto">
         {config.map((cfg, i) => (
           <FloatingPhotoCard
             key={`static-${i}`}
@@ -254,9 +254,9 @@ function aspectRatio(cfg: PhotoConfig): string {
   const tripled = [...batch, ...batch, ...batch]
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-4">
+    <div className="relative overflow-hidden rounded-2xl">
       <div
-        className="grid grid-cols-2 gap-6 w-fit mx-auto"
+        className="grid grid-cols-2 gap-2 w-fit mx-auto"
         style={{
           animation: 'memory-conveyor 8s linear infinite',
           willChange: 'transform',
@@ -267,10 +267,9 @@ function aspectRatio(cfg: PhotoConfig): string {
           return (
             <div
               key={`${img?.id ?? 'empty'}-${i}`}
-              className="rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden flex items-center justify-center"
+              className="rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-white flex items-center justify-center"
               style={{
                 aspectRatio: aspectRatio(cfg),
-                backgroundColor: '#ffffff',
                 willChange: 'transform',
               }}
             >
