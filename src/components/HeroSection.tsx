@@ -194,49 +194,66 @@ function MemoryConveyor({ images, config }: {
   config: PhotoConfig[]
 }) {
   const reduced = useReducedMotion()
-  const [batch, setBatch] = useState<Media[]>([])
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const lastTickRef = useRef<number>(0)
-  // True while batch is being swapped; wrapper fades out briefly so remount
-  // never coincides with visible conveyor motion.
-  const [swapping, setSwapping] = useState(false)
-  // Ref tracks the currently-mounted batch id so we can tell old vs new in onAnimationEnd.
-  const renderedIdRef = useRef<string>('')
 
-  // Seed initial batch of 6 unique photos
+  // Fixed-size deque of 6 images — one per card slot, never unmount/remount.
+  // At each interval (8 s = one CSS cycle), one image exits and one enters,
+  // keeping the grid fully populated at all times — no visible refresh.
+  const [batch, setBatch] = useState<Media[]>([])
+  const queueRef = useRef<Media[]>([])
+  // Pool = ids of images not yet in the queue. Reset when depleted.
+  const poolRef = useRef(new Set<string>())
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const CARD_H = useMemo(() => config[0]?.h + 4, [config])
+
+  // Seed: fill queue + populate initial pool.
   useEffect(() => {
     if (!images.length) return
-    const b = shuffle(images).slice(0, 6)
-    renderedIdRef.current = JSON.stringify(b.map(m => m.id))
+    const shuffled = shuffle(images)
+    const b = shuffled.slice(0, 6)
+    queueRef.current = b
+    const pool = new Set(images.map(m => m.id))
+    b.forEach(m => pool.delete(m.id))
+    poolRef.current = pool
     setBatch(b)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images])
 
-  // After 2 full cycles (16 s) replace the batch with a fresh shuffle of ALL images.
-  // When swapping starts, wrapper fades to transparent; when the new batch mounts,
-  // the wrapper fades back in. No visible pop, no chop during scroll.
+  // Stream one image every CSS cycle (8 s). Cards are stable-keyed so no
+  // unmount/remount — only the `img` prop changes on a single slot per tick.
   useEffect(() => {
     if (reduced || !images.length) return
-    const tick = 16_000 // 2 cycles × 8s each
+    const CYCLE = 8000
     intervalRef.current = setInterval(() => {
-      if (Date.now() - lastTickRef.current > tick) {
-        lastTickRef.current = Date.now()
-        setBatch(prev => {
-          const curIds = new Set(prev.map(m => m.id))
-          const allIds = new Set(images.map(m => m.id))
-          if (curIds.size >= allIds.size) return prev // already showed everything
-          const next = shuffle(images).slice(0, 6)
-          renderedIdRef.current = JSON.stringify(next.map(m => m.id))
-          setSwapping(true) // fires fade-out
-          return next
-        })
-      }
-    }, 2000)
+      setBatch(prev => {
+        const q = queueRef.current
+        const pool = poolRef.current
+
+        if (prev.length < 6 || !images.length) return prev
+
+        // Dequeue the first image (it scrolled off-screen during the cycle)
+        q.shift()
+
+        // Build candidates: all images not currently in queue
+        const curIds = new Set(q.map(m => m.id))
+        const candidates = images.filter(m => !curIds.has(m.id))
+
+        if (candidates.length === 0) {
+          // Pool exhausted — make everything available again
+          poolRef.current = new Set(images.map(m => m.id))
+          const fresh = shuffle(images)
+          q.push(fresh[0])
+        } else {
+          const pick = shuffle(candidates)[0]
+          q.push(pick)
+        }
+
+        return [...q]
+      })
+    }, CYCLE)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images, reduced])
-
-  const batchKey = JSON.stringify(batch.map(m => m.id))
 
   if (reduced || !images.length || batch.length === 0) {
     return (
@@ -255,20 +272,13 @@ function MemoryConveyor({ images, config }: {
     )
   }
 
-  // Three copies → CSS animates yPercent 0→100, instant snap-back is invisible.
+  // Three identical copies → CSS animates yPercent 0→100, snap-back invisible.
   const tripled = [...batch, ...batch, ...batch]
-  const CARD_H = config[0]?.h + 4
-  const CARD_W = (w: number, h: number) => `${Math.round(w * (CARD_H / h))}px`
 
   return (
     <div
       className="relative overflow-hidden rounded-2xl"
-      style={{
-        height: Math.ceil(tripled.length / 2) * CARD_H,
-        transition: swapping ? 'opacity 0.3s ease' : 'opacity 1',
-        opacity: swapping ? 0 : 1,
-      }}
-      onTransitionEnd={() => setSwapping(false)}
+      style={{ height: Math.ceil(tripled.length / 2) * CARD_H }}
     >
       <div
         className="grid grid-cols-2 gap-2 w-fit mx-auto"
@@ -281,15 +291,15 @@ function MemoryConveyor({ images, config }: {
           const cfg = config[i % config.length]
           return (
             <div
-              key={`${batchKey}-${i}`}
+              key={`slot-${i % 6}-${img?.id ?? 'empty'}`}
               className="rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-white flex items-center justify-center"
-              style={{ width: CARD_W(cfg.w, cfg.h), height: CARD_H }}
+              style={{ width: `${Math.round(cfg.w * (CARD_H / cfg.h))}px`, height: CARD_H }}
             >
               {img ? (
                 <SafeImage
                   src={publicUrl(img.storage_path)}
                   alt={img.caption || ''}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="h-full w-full object-cover transition-all duration-300 ease-out"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blush-200/60 to-lilac-200/60 dark:from-night-700 dark:to-night-600">
