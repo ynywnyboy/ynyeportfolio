@@ -227,9 +227,14 @@ function MemoryConveyor({ images, config }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images, reduced])
 
+  // Aspect ratio derived from raw pixel dimensions so cards never stretch/squash.
+function aspectRatio(cfg: PhotoConfig): string {
+  return `${cfg.w} / ${cfg.h}`
+}
+
   if (reduced || !images.length || batch.length === 0) {
     return (
-      <div className="grid grid-cols-2 gap-4 p-2 max-w-[380px]" style={{ width: 'fit-content', marginLeft: 'auto', marginRight: 'auto' }}>
+      <div className="grid grid-cols-2 gap-6 p-3 w-fit mx-auto">
         {config.map((cfg, i) => (
           <FloatingPhotoCard
             key={`static-${i}`}
@@ -249,13 +254,10 @@ function MemoryConveyor({ images, config }: {
   const tripled = [...batch, ...batch, ...batch]
 
   return (
-    <div className="relative overflow-hidden rounded-2xl" style={{ minHeight: 380 }}>
+    <div className="relative overflow-hidden rounded-2xl p-4">
       <div
-        className="grid grid-cols-2 gap-5 p-2 max-w-[380px]"
+        className="grid grid-cols-2 gap-6 w-fit mx-auto"
         style={{
-          width: 'fit-content',
-          marginLeft: 'auto',
-          marginRight: 'auto',
           animation: 'memory-conveyor 8s linear infinite',
           willChange: 'transform',
         }}
@@ -265,10 +267,9 @@ function MemoryConveyor({ images, config }: {
           return (
             <div
               key={`${img?.id ?? 'empty'}-${i}`}
-              className="rounded-2xl shadow-md hover:shadow-lg transition-shadow"
+              className="rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden flex items-center justify-center"
               style={{
-                width: cfg.w + 8,
-                height: cfg.h + 8,
+                aspectRatio: aspectRatio(cfg),
                 backgroundColor: '#ffffff',
                 willChange: 'transform',
               }}
