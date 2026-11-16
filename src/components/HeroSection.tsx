@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useScroll } from 'motion/react'
 import { Heart, Sparkles } from 'lucide-react'
-import * as Matter from 'matter-js'
 import { useSite } from '../context/SiteContext'
 import { useReducedMotion } from '../lib/a11y'
 import { publicUrl } from '../lib/storage'
@@ -91,276 +90,9 @@ function FloatingPhotoCard({ config, img, index, visible, className }: {
   )
 }
 
-// ─── Ragdoll ID Badge (Matter.js) ─────────────────────────────────────────
+// ─── Swing ID Badge — large, CSS-only swing, no physics ──────────────────────
 
-function RagdollID({ enabled, idCardPath, lanyardColor, swingIntensity }: {
-  enabled: boolean
-  idCardPath?: string | null
-  lanyardColor?: string
-  swingIntensity?: number
-}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const badgeRef = useRef<Matter.Body | null>(null)
-  const pointsRef = useRef<Matter.Body[]>([])
-  const imgRef = useRef<HTMLImageElement | null>(null)
-  const mouseRef = useRef<{ x: number; y: number; isDown: boolean }>({ x: 0, y: 0, isDown: false })
-  const animFrameRef = useRef<number>(0)
-  const reduced = useReducedMotion()
-
-  const lanyardClr = lanyardColor ?? '#8b5cf6'
-  const intensity = swingIntensity ?? 1.0
-
-  useEffect(() => {
-    if (!enabled || reduced || !canvasRef.current) return
-
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')!
-    const dpr = window.devicePixelRatio || 1
-    const rect = canvas.getBoundingClientRect()
-
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
-    ctx.scale(dpr, dpr)
-
-    const W = rect.width
-    const H = rect.height
-    const anchorX = W / 2
-    const anchorY = 2
-
-    // Preload image
-    if (idCardPath) {
-      const img = new Image()
-      img.crossOrigin = 'anonymous'
-      img.src = publicUrl(idCardPath)
-      imgRef.current = img
-    }
-
-    const engine = Matter.Engine.create({ gravity: { x: 0, y: 1.0 * intensity } })
-    const ground = Matter.Bodies.rectangle(W / 2, H + 40, W, 80, { isStatic: true })
-    Matter.World.add(engine.world, ground)
-
-    const segments = 18
-    const segLen = 12
-    const pts: Matter.Body[] = []
-    const pins = Matter.Bodies.circle(anchorX, anchorY, 3, { isStatic: true, friction: 0 })
-    Matter.World.add(engine.world, pins)
-    pts.push(pins)
-
-    for (let i = 1; i <= segments; i++) {
-      const p = Matter.Bodies.circle(
-        anchorX + (i % 2 === 0 ? 1.5 : -1.5),
-        anchorY + i * segLen,
-        2,
-        { friction: 0.3, density: 0.008 }
-      )
-      Matter.World.add(engine.world, p)
-      pts.push(p)
-      if (i > 1) {
-        Matter.World.add(engine.world, Matter.Constraint.create({
-          bodyA: pts[i - 2],
-          bodyB: p,
-          length: segLen,
-          stiffness: 0.85,
-          damping: 0.08,
-        }))
-      }
-    }
-    pointsRef.current = pts
-
-    const bw = 110
-    const bh = 150
-    const badge = Matter.Bodies.rectangle(anchorX, anchorY + segments * segLen + bh / 2 + 4, bw, bh, {
-      density: 0.003,
-      frictionAir: 0.015,
-      restitution: 0.2,
-      chamfer: { radius: 8 },
-    })
-    Matter.World.add(engine.world, badge)
-    badgeRef.current = badge
-    Matter.World.add(engine.world, Matter.Constraint.create({
-      bodyA: pts[pts.length - 1],
-      bodyB: badge,
-      pointA: { x: 0, y: -(bh / 2 + 4) },
-      length: 6,
-      stiffness: 0.5,
-      damping: 0.05,
-    }))
-
-    const onMouseMove = (e: MouseEvent) => {
-      const r = canvas.getBoundingClientRect()
-      mouseRef.current.x = e.clientX - r.left
-      mouseRef.current.y = e.clientY - r.top
-      if (mouseRef.current.isDown && badge) {
-        Matter.Body.applyForce(badge, badge.position, { x: (e.movementX ?? 0) * 0.003, y: (e.movementY ?? 0) * 0.003 })
-      }
-    }
-    const onMouseDown = (e: MouseEvent) => {
-      const r = canvas.getBoundingClientRect()
-      const mx = e.clientX - r.left
-      const my = e.clientY - r.top
-      if (badge && Math.hypot(mx - badge.position.x, my - badge.position.y) < 70) {
-        mouseRef.current.isDown = true
-        Matter.Body.applyForce(badge, badge.position, { x: (mx - badge.position.x) * 0.001, y: (my - badge.position.y) * 0.001 })
-      }
-    }
-    const onMouseUp = () => { mouseRef.current.isDown = false }
-    canvas.addEventListener('mousemove', onMouseMove)
-    canvas.addEventListener('mousedown', onMouseDown)
-    canvas.addEventListener('mouseup', onMouseUp)
-    canvas.addEventListener('mouseleave', onMouseUp)
-    canvas.style.cursor = 'grab'
-
-    const render = () => {
-      animFrameRef.current = requestAnimationFrame(render)
-      Matter.Engine.update(engine, 1000 / 60)
-      ctx.clearRect(0, 0, W, H)
-
-      // Lanyard chain - thicker for larger scale
-      ctx.strokeStyle = lanyardClr
-      ctx.lineWidth = 3.5
-      ctx.lineCap = 'round'
-      ctx.beginPath()
-      ctx.moveTo(pts[0].position.x, pts[0].position.y)
-      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].position.x, pts[i].position.y)
-      ctx.stroke()
-
-      // Clip ring - larger
-      const lastPt = pts[pts.length - 1]
-      ctx.fillStyle = '#6b7280'
-      ctx.beginPath()
-      ctx.arc(lastPt.position.x, lastPt.position.y, 6, 0, Math.PI * 2)
-      ctx.fill()
-
-      // Badge
-      if (badge) {
-        const { x, y } = badge.position
-        const angle = badge.angle
-        ctx.save()
-        ctx.translate(x, y)
-        ctx.rotate(angle)
-
-        // Shadow
-        ctx.shadowColor = 'rgba(0,0,0,0.25)'
-        ctx.shadowBlur = 20
-        ctx.shadowOffsetY = 8
-
-        // Card body gradient
-        const grad = ctx.createLinearGradient(-bw / 2, -bh / 2, bw / 2, bh / 2)
-        grad.addColorStop(0, '#ffffff')
-        grad.addColorStop(1, '#f1f5f9')
-        ctx.fillStyle = grad
-        ctx.beginPath()
-        ctx.roundRect(-bw / 2, -bh / 2, bw, bh, 14)
-        ctx.fill()
-
-        ctx.shadowColor = 'transparent'
-
-        // Border
-        ctx.strokeStyle = 'rgba(0,0,0,0.08)'
-        ctx.lineWidth = 1.5
-        ctx.strokeRect(-bw / 2 + 1, -bh / 2 + 1, bw - 2, bh - 2)
-
-        // Top hole - larger
-        ctx.fillStyle = '#cbd5e1'
-        ctx.beginPath()
-        ctx.arc(0, -bh / 2 + 18, 7, 0, Math.PI * 2)
-        ctx.fill()
-
-        // Uploaded image
-        const img = imgRef.current
-        if (img && img.complete && img.naturalWidth > 0) {
-          const ix = -bw / 2 + 12
-          const iy = -bh / 2 + 34
-          const iw = bw - 24
-          const ih = bh - 48
-          ctx.save()
-          ctx.beginPath()
-          ctx.roundRect(ix, iy, iw, ih, 6)
-          ctx.clip()
-          // Cover-fit the image inside the card
-          const scale = Math.max(iw / img.naturalWidth, ih / img.naturalHeight)
-          const dw = img.naturalWidth * scale
-          const dh = img.naturalHeight * scale
-          ctx.drawImage(img, ix + (iw - dw) / 2, iy + (ih - dh) / 2, dw, dh)
-          ctx.restore()
-        } else {
-          // Fallback: placeholder illustration
-          ctx.fillStyle = '#e2e8f0'
-          ctx.fillRect(-bw / 2 + 12, -bh / 2 + 34, bw - 24, 70)
-          ctx.fillStyle = '#94a3b8'
-          ctx.font = 'bold 11px Inter, system-ui, sans-serif'
-          ctx.textAlign = 'center'
-          ctx.fillText('PORTFOLIO', 0, -bh / 2 + 72)
-          ctx.font = '9px Inter, system-ui, sans-serif'
-          ctx.fillStyle = '#cbd5e1'
-          ctx.fillText('CREATIVE STUDIO', 0, -bh / 2 + 90)
-        }
-
-        // Bottom strip
-        ctx.fillStyle = lanyardClr
-        ctx.globalAlpha = 0.15
-        ctx.fillRect(-bw / 2 + 12, bh / 2 - 24, bw - 24, 14)
-        ctx.globalAlpha = 1
-
-        // Hello text
-        ctx.fillStyle = '#334155'
-        ctx.font = 'bold 12px Inter, system-ui, sans-serif'
-        ctx.textAlign = 'center'
-        ctx.fillText('HELLO!', 0, bh / 2 - 12)
-
-        ctx.restore()
-      }
-
-      // Mount dot
-      ctx.fillStyle = '#94a3b8'
-      ctx.beginPath()
-      ctx.arc(anchorX, anchorY + 2, 4, 0, Math.PI * 2)
-      ctx.fill()
-    }
-    render()
-
-    return () => {
-      cancelAnimationFrame(animFrameRef.current)
-      Matter.Engine.clear(engine)
-      canvas.removeEventListener('mousemove', onMouseMove)
-      canvas.removeEventListener('mousedown', onMouseDown)
-      canvas.removeEventListener('mouseup', onMouseUp)
-      canvas.removeEventListener('mouseleave', onMouseUp)
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, reduced, idCardPath, lanyardClr, intensity])
-
-  if (reduced) {
-    return (
-      <div className="relative w-[130px] h-[300px] flex flex-col items-center pt-1">
-        <div className="w-0.5 h-20 bg-stone-400/60 dark:bg-stone-500/60" />
-        <div className="mt-1 w-[110px] h-[150px] rounded-2xl bg-white border border-stone-200 shadow-lg flex flex-col items-center justify-center p-2 select-none">
-          {idCardPath ? (
-            <img src={publicUrl(idCardPath)} alt="ID card" className="w-full h-full object-cover rounded-lg" />
-          ) : (
-            <>
-              <span className="text-[10px] font-bold text-slate-700 tracking-wide">PORTFOLIO</span>
-              <span className="text-[8px] text-slate-400 mt-0.5">CREATIVE STUDIO</span>
-              <div className="w-full h-px bg-stone-200 my-1" />
-              <span className="text-[8px] text-slate-600 font-semibold">HELLO!</span>
-            </>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div className="relative w-[130px] h-[300px] shrink-0">
-      <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" style={{ touchAction: 'none' }} />
-    </div>
-  )
-
-}
-
-// ─── Mobile ID Badge (CSS-only fallback, no physics) ───────────────────────
-
-function MobileIDBadge({ idCardPath, lanyardColor, swingIntensity }: {
+function SwingIDBadge({ idCardPath, lanyardColor, swingIntensity }: {
   idCardPath?: string | null
   lanyardColor?: string
   swingIntensity?: number
@@ -368,79 +100,74 @@ function MobileIDBadge({ idCardPath, lanyardColor, swingIntensity }: {
   const reduced = useReducedMotion()
   const intensity = swingIntensity ?? 1.0
   const lanyardClr = lanyardColor ?? '#8b5cf6'
+  const animDur = `${2400 / intensity}ms`
 
   return (
-    <div className="relative flex flex-col items-center" style={{ width: '130px', height: '300px' }}>
-      {/* Lanyard - SVG path that swings with CSS */}
-      <svg
-        className={`w-1.5 h-[260px] transform-origin-top-center ${reduced ? '' : 'animate-swing'}`}
-        viewBox="0 0 15 260"
-        style={{
-          transformOrigin: '7.5px 0',
-          animationDuration: `${2000 / intensity}ms`,
-        }}
-        aria-hidden="true"
-      >
-        <defs>
-          <linearGradient id="lanyardGrad" x1="0" y1="0" x2="15" y2="0">
-            <stop offset="0%" stopColor={lanyardClr} stopOpacity="0.9" />
-            <stop offset="50%" stopColor={lanyardClr} stopOpacity="0.6" />
-            <stop offset="100%" stopColor={lanyardClr} stopOpacity="0.9" />
-          </linearGradient>
-        </defs>
-        {/* Lanyard strap */}
-        <path
-          d="M7.5,0 C7.5,0 7.5,90 7.5,90 C7.5,90 7.5,180 7.5,180 C7.5,180 7.5,240 7.5,240"
-          stroke="url(#lanyardGrad)"
-          strokeWidth="4.5"
-          fill="none"
-          strokeLinecap="round"
-        />
-        {/* Metal clip at top */}
-        <rect x="4" y="0" width="7" height="12" rx="1.5" fill="#6b7280" />
-        {/* Connection ring */}
-        <circle cx="7.5" cy="240" r="6" fill="#6b7280" />
-      </svg>
-
-      {/* ID Badge - swings with the lanyard */}
+    <div className="relative flex flex-col items-center" style={{ width: '200px', height: '420px' }}>
+      {/* Lanyard rod */}
       <div
-        className={`relative w-[110px] h-[150px] rounded-2xl shadow-lg flex flex-col items-center justify-start p-2 select-none ${reduced ? '' : 'animate-swing'}`}
+        className={`w-1 rounded-full ${reduced ? '' : 'origin-top'} `}
         style={{
-          background: 'linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%)',
-          border: '1px solid rgba(0,0,0,0.08)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-          transformOrigin: '55px -245px',
-          animationDuration: `${2000 / intensity}ms`,
+          height: '320px',
+          background: `linear-gradient(90deg, ${lanyardClr}dd, ${lanyardClr}aa, ${lanyardClr}dd)`,
+          ...(reduced ? {} : {
+            animation: `swing ${animDur} ease-in-out infinite`,
+            transformOrigin: 'center top',
+          }),
+        }}
+      />
+
+      {/* Clip ring */}
+      <div
+        className="absolute w-3 h-3 rounded-full border-2 border-stone-400"
+        style={{ top: '148px', left: 'calc(50% - 6px)', backgroundColor: '#cbd5e1' }}
+      />
+
+      {/* ID Card */}
+      <div
+        className={`absolute rounded-2xl shadow-xl overflow-hidden bg-white dark:bg-slate-800 border border-stone-200/60 dark:border-white/10 select-none ${reduced ? '' : 'origin-top'}`}
+        style={{
+          width: '180px',
+          height: '240px',
+          top: '170px',
+          left: '10px',
+          boxShadow: '0 12px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10)',
+          ...(reduced ? {} : {
+            animation: `swing ${animDur} ease-in-out infinite`,
+          }),
         }}
       >
-        {/* Top hole */}
-        <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-stone-300" />
-
-        {/* Uploaded image or placeholder */}
-        <div className="relative w-full h-[92px] rounded-lg overflow-hidden">
+        {/* Photo area */}
+        <div className="relative w-full h-[145px] overflow-hidden rounded-t-2xl">
           {idCardPath ? (
-            <img
-              src={publicUrl(idCardPath)}
-              alt="ID card photo"
-              className="w-full h-full object-cover"
-            />
+            <img src={publicUrl(idCardPath)} alt="ID" className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-stone-100">
-              <span className="text-[10px] font-bold text-slate-700 tracking-wide">PORTFOLIO</span>
-              <span className="text-[8px] text-slate-400 mt-0.5">CREATIVE STUDIO</span>
+            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blush-100 to-lilac-100 dark:from-night-700 dark:to-night-600">
+              <Heart className="h-6 w-6 text-blush-300 mb-1" aria-hidden="true" />
+              <span className="text-[9px] font-bold text-slate-700 tracking-widest">PORTFOLIO</span>
             </div>
           )}
+          {/* Gloss overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
         </div>
 
-        {/* Bottom strip */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[86px] h-3.5 rounded-b-lg"
-          style={{ backgroundColor: lanyardClr, opacity: 0.15 }} />
+        {/* Divider */}
+        <div className="mx-4 h-px bg-stone-200 dark:bg-white/10" />
 
-        {/* Hello text */}
-        <span className="text-[9px] font-semibold text-slate-700">HELLO!</span>
+        {/* Name / label */}
+        <div className="flex flex-col items-center pt-3 pb-2">
+          <span className="text-xs font-semibold text-slate-800 dark:text-slate-100 tracking-wide">
+            {idCardPath ? 'HELLO!' : 'PORTFOLIO'}
+          </span>
+          <span className="text-[8px] text-stone-400 mt-0.5">{idCardPath ? 'CREATIVE STUDIO' : 'CREATIVE STUDIO'}</span>
+        </div>
+
+        {/* Bottom accent strip */}
+        <div
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[156px] h-3 rounded-b-lg opacity-20"
+          style={{ backgroundColor: lanyardClr }}
+        />
       </div>
-
-
     </div>
   )
 }
@@ -751,11 +478,11 @@ export default function HeroSection() {
         >
           <FloatingDecor />
 
-          {/* HERO COMPOSITION — Title top-left, photos below, ragdoll right */}
+          {/* HERO COMPOSITION — Title top-left, photos below, swing badge right */}
           <div className="relative z-10 flex w-full max-w-[560px] flex-col gap-5 lg:flex-row lg:items-start">
 
             {/* LEFT — Title (top-left) + Photos grid below */}
-            <div className="w-full">
+            <div className="w-full lg:-ml-4">
               <motion.div
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: mounted ? 1 : 0, x: mounted ? 0 : -12 }}
@@ -779,19 +506,18 @@ export default function HeroSection() {
               <MemoryConveyor images={images} config={photoConfigs} />
             </div>
 
-            {/* RIGHT — Ragdoll ID */}
-            <div className="hidden lg:flex shrink-0 items-start justify-center lg:ml-auto lg:max-w-[130px]">
-              <RagdollID
-                enabled={mounted}
+            {/* RIGHT — Large swing badge (desktop only; mobile gets it below the photos) */}
+            <div className="hidden lg:flex shrink-0 items-start justify-center lg:ml-auto lg:pl-4">
+              <SwingIDBadge
                 idCardPath={idCardPath}
                 lanyardColor={lanyardColor}
                 swingIntensity={swingIntensity}
               />
             </div>
 
-            {/* Mobile fallback: simple CSS-swinging ID badge (no physics) */}
-            <div className="lg:hidden flex justify-center mt-4">
-              <MobileIDBadge
+            {/* Mobile: swing badge centered below photos */}
+            <div className="flex lg:hidden justify-center mt-4">
+              <SwingIDBadge
                 idCardPath={idCardPath}
                 lanyardColor={lanyardColor}
                 swingIntensity={swingIntensity}

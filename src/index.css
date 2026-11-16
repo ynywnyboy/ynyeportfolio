@@ -217,11 +217,11 @@ html[data-glow='on'] .card { box-shadow: 0 0 0 1.5px rgb(var(--blush-300) / 0.85
   .xs\:text-base { font-size: 1rem; line-height: 1.5rem; }
 }
 
-/* Swing animation for mobile ID badge lanyard */
+/* Swing animation for the ID badge lanyard */
 @keyframes swing {
-  0% { transform: rotate(-8deg); }
-  50% { transform: rotate(8deg); }
-  100% { transform: rotate(-8deg); }
+  0% { transform: rotate(-14deg); }
+  50% { transform: rotate(14deg); }
+  100% { transform: rotate(-14deg); }
 }
 
 .animate-swing {
