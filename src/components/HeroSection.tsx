@@ -227,11 +227,6 @@ function MemoryConveyor({ images, config }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images, reduced])
 
-  // Aspect ratio derived from raw pixel dimensions so cards never stretch/squash.
-function aspectRatio(cfg: PhotoConfig): string {
-  return `${cfg.w} / ${cfg.h}`
-}
-
   if (reduced || !images.length || batch.length === 0) {
     return (
       <div className="grid grid-cols-2 gap-2 w-fit mx-auto">
@@ -269,7 +264,8 @@ function aspectRatio(cfg: PhotoConfig): string {
               key={`${img?.id ?? 'empty'}-${i}`}
               className="rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-white flex items-center justify-center"
               style={{
-                aspectRatio: aspectRatio(cfg),
+                width: `calc(${cfg.w} * 150 / ${cfg.h})`,
+                height: 154,
                 willChange: 'transform',
               }}
             >
