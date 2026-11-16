@@ -47,16 +47,9 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- Debug overlay: visible only when no-js-render has class removed; captures errors before React -->
-    <div id="__debug-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;background:rgba(0,0,0,.85);color:#ff6b6b;font-family:monospace;font-size:13px;padding:20px;overflow:auto;">
-      <div style="max-width:600px;margin:0 auto;">
-        <h3 style="margin:0 0 10px;color:#fff">JS Boot Diagnostics</h3>
-        <pre id="__debug-log" style="white-space:pre-wrap;word-break:break-all;margin:0;line-height:1.6;"></pre>
-      </div>
-    </div>
     <script>
       // Runs in plain JS BEFORE any module script — survives React crash.
-      // Writes raw logs to localStorage under '__olw-debug-sid' so they persist across reloads.
+      // Captures real JS errors only. Normal console.log/info/fetch noise is NOT shown.
       (function () {
         var sid = sessionStorage.getItem('__olw-debug-sid')
         if (!sid) {
@@ -70,17 +63,11 @@
           try { localStorage.setItem(LOG_KEY, JSON.stringify(buf)) } catch (_) {}
         }
         function stamp() { return '[' + performance.now().toFixed(1) + 'ms]' }
-        // Patch console methods
-        ;['log','warn','error','info'].forEach(function(m){
+        // Capture real JS errors only — not console.log/info/warn
+        ;['error'].forEach(function(m){
           var orig = console[m]
           console[m] = function(){ buf.push(stamp()+' '+Array.from(arguments).map(String).join(' ')); flush(); try{orig.apply(console,arguments)}catch(e){} }
         })
-        // Capture network failures
-        var origFetch = window.fetch
-        window.fetch = function(url){
-          buf.push(stamp()+' fetch('+String(url)+')'); flush()
-          return origFetch.apply(this,arguments).catch(function(e){ buf.push(stamp()+' fetch err: '+e.message); flush(); throw e })
-        }
         // Global JS errors
         window.addEventListener('error', function(e){
           buf.push(stamp()+' ERROR: '+e.message)
@@ -91,19 +78,16 @@
           buf.push(stamp()+' REJECT: '+((e.reason&&e.reason.message)||String(e.reason)))
           flush()
         })
-        // Show overlay if there were errors from this session
+        // Show overlay only if there were actual errors from this session
         setTimeout(function(){
           if(buf.length > 0){
-            var el = document.getElementById('__debug-overlay')
             var pre = document.getElementById('__debug-log')
-            if(el && pre){
+            if(pre){
               pre.textContent = buf.join('\n')
-              el.style.display = 'block'
+              pre.style.display = 'block'
             }
           }
         }, 50)
-        // Expose full buffer globally for later inspection
-        window.__OLW_LOGS = buf
       })()
     </script>
     <script type="module" src="/src/main.tsx"></script>
