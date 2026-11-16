@@ -197,35 +197,46 @@ function MemoryConveyor({ images, config }: {
   const [batch, setBatch] = useState<Media[]>([])
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const lastTickRef = useRef<number>(0)
+  // True while batch is being swapped; wrapper fades out briefly so remount
+  // never coincides with visible conveyor motion.
+  const [swapping, setSwapping] = useState(false)
+  // Ref tracks the currently-mounted batch id so we can tell old vs new in onAnimationEnd.
+  const renderedIdRef = useRef<string>('')
 
   // Seed initial batch of 6 unique photos
   useEffect(() => {
     if (!images.length) return
-    setBatch(shuffle(images).slice(0, 6))
+    const b = shuffle(images).slice(0, 6)
+    renderedIdRef.current = JSON.stringify(b.map(m => m.id))
+    setBatch(b)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images])
 
   // After 2 full cycles (16 s) replace the batch with a fresh shuffle of ALL images.
-  // This gives a new set of 6 every time the loop completes, maximizing variety.
+  // When swapping starts, wrapper fades to transparent; when the new batch mounts,
+  // the wrapper fades back in. No visible pop, no chop during scroll.
   useEffect(() => {
     if (reduced || !images.length) return
     const tick = 16_000 // 2 cycles × 8s each
     intervalRef.current = setInterval(() => {
-      // Only advance if the batch hasn't changed (avoids double-firing on strict mode)
       if (Date.now() - lastTickRef.current > tick) {
         lastTickRef.current = Date.now()
         setBatch(prev => {
-          // Don't swap if batch already contains all images — stay until pool shrinks
           const curIds = new Set(prev.map(m => m.id))
           const allIds = new Set(images.map(m => m.id))
           if (curIds.size >= allIds.size) return prev // already showed everything
-          return shuffle(images).slice(0, 6)
+          const next = shuffle(images).slice(0, 6)
+          renderedIdRef.current = JSON.stringify(next.map(m => m.id))
+          setSwapping(true) // fires fade-out
+          return next
         })
       }
-    }, 2000) // poll every 2s to find the 16s mark
+    }, 2000)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images, reduced])
+
+  const batchKey = JSON.stringify(batch.map(m => m.id))
 
   if (reduced || !images.length || batch.length === 0) {
     return (
@@ -244,12 +255,21 @@ function MemoryConveyor({ images, config }: {
     )
   }
 
-  // 3 identical copies → CSS animates yPercent 0→100, instant snap-back is invisible.
-  // Each card is an independent tile: own container, own spacing, isolated transform.
+  // Three copies → CSS animates yPercent 0→100, instant snap-back is invisible.
   const tripled = [...batch, ...batch, ...batch]
+  const CARD_H = config[0]?.h + 4
+  const CARD_W = (w: number, h: number) => `${Math.round(w * (CARD_H / h))}px`
 
   return (
-    <div className="relative overflow-hidden rounded-2xl">
+    <div
+      className="relative overflow-hidden rounded-2xl"
+      style={{
+        height: Math.ceil(tripled.length / 2) * CARD_H,
+        transition: swapping ? 'opacity 0.3s ease' : 'opacity 1',
+        opacity: swapping ? 0 : 1,
+      }}
+      onTransitionEnd={() => setSwapping(false)}
+    >
       <div
         className="grid grid-cols-2 gap-2 w-fit mx-auto"
         style={{
@@ -261,13 +281,9 @@ function MemoryConveyor({ images, config }: {
           const cfg = config[i % config.length]
           return (
             <div
-              key={`${img?.id ?? 'empty'}-${i}`}
+              key={`${batchKey}-${i}`}
               className="rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden bg-white flex items-center justify-center"
-              style={{
-                width: `calc(${cfg.w} * 150 / ${cfg.h})`,
-                height: 154,
-                willChange: 'transform',
-              }}
+              style={{ width: CARD_W(cfg.w, cfg.h), height: CARD_H }}
             >
               {img ? (
                 <SafeImage
