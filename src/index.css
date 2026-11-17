@@ -239,6 +239,39 @@ html[data-glow='on'] .card { box-shadow: 0 0 0 1.5px rgb(var(--blush-300) / 0.85
 }
 
 /* ── Animation Settings: driven by CSS vars emitted by buildAppearanceVars ── */
+/* Base rules: these classes only ever appeared inside the `data-*-off` selectors below,
+   so with animations enabled nothing set their `animation` property and every particle
+   (petals, butterflies, pixels, hearts, stars, flowers) sat still. */
+.animate-floaty { animation: floaty linear infinite; }
+.animate-petalfall { animation: petalfall linear infinite; }
+.animate-flutter { animation: flutter ease-in-out infinite; }
+.animate-pixelrise { animation: pixelrise steps(40) infinite; }
+.animate-wing { animation: wing .45s ease-in-out infinite; }
+
+/* Keyframes for the five particle anim groups above */
+@keyframes floaty        { 0%    { transform: translateY(0) rotate(0);   opacity: 0 }
+                           10%   { opacity: .8 }
+                           90%   { opacity: .8 }
+                           to    { transform: translateY(-110vh) rotate(25deg); opacity: 0 } }
+@keyframes flutter       { 0%    { transform: translateZ(0) rotate(-6deg);  opacity: 0 }
+                           10%   { opacity: .9 }
+                           25%   { transform: translate3d( 6vw, -28vh, 0) rotate( 8deg) }
+                           50%   { transform: translate3d(-5vw, -55vh, 0) rotate(-8deg) }
+                           75%   { transform: translate3d( 6vw, -82vh, 0) rotate( 6deg) }
+                           90%   { opacity: .9 }
+                           to    { transform: translate3d(0, -112vh, 0) rotate(0);  opacity: 0 } }
+@keyframes petalfall     { 0%    { transform: translate3d(0, -8vh, 0) rotate(0);      opacity: 0 }
+                           10%   { opacity: .85 }
+                           50%   { transform: translate3d( 7vw, 55vh, 0) rotate(180deg);  opacity: .85 }
+                           90%   { opacity: .8 }
+                           to    { transform: translate3d(-3vw, 112vh, 0) rotate(360deg); opacity: 0 } }
+@keyframes pixelrise     { 0%    { transform: translateY(0);          opacity: 0 }
+                           10%   { opacity: .9 }
+                           90%   { opacity: .9 }
+                           to    { transform: translateY(-112vh);                     opacity: 0 } }
+@keyframes wing          { 0%, to { transform: scaleX(1) }
+                            50%   { transform: scaleX(.35) } }
+
 html[data-floating-elements="off"] .animate-floaty,
 html[data-floating-elements="off"] .animate-petalfall,
 html[data-floating-elements="off"] .animate-pixelrise,
