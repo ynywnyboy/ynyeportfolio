@@ -1,8 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { DoorOpeningTransition } from '../components/door/DoorOpeningTransition'
+import { OpeningDispatcher } from '../components/door/OpeningDispatcher'
 import { shouldShowDoorOnLoad } from '../lib/door'
 import { usePlayer } from './PlayerContext'
+import type { OpeningKind } from '../lib/appearance'
 
 interface DoorState {
   /** Show the entrance again (and go to the homepage). */
@@ -26,6 +27,10 @@ export function DoorProvider({ children }: { children: ReactNode }) {
     typeof window === 'undefined' ? false : shouldShowDoorOnLoad(loc.pathname, loc.search, loc.hash),
   )
   const [entered, setEntered] = useState(false)
+  const [openingKind, setOpeningKind] = useState<OpeningKind>(() => {
+    if (typeof window === 'undefined') return 'door'
+    try { return (localStorage.getItem('olw-opening-kind') as OpeningKind) ?? 'door' } catch { return 'door' }
+  })
   const appRef = useRef<HTMLDivElement>(null)
 
   // While the door is waiting for a tap, nothing behind it can be tabbed to or read out.
@@ -58,7 +63,7 @@ export function DoorProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={value}>
       <div ref={appRef}>{children}</div>
-      {showing && <DoorOpeningTransition onDone={onDone} onEnter={onEnter} />}
+      {showing && <OpeningDispatcher openingKind={openingKind} onDone={onDone} onEnter={onEnter} />}
     </Ctx.Provider>
   )
 }
