@@ -267,6 +267,9 @@ export function ThemeSettings() {
       </div>
 
       <CustomizeWorld edit />
+
+      {/* ─── Opening Animation ─────────────────────────────── */}
+      <OpeningSelector />
     </div>
   )
 }
