@@ -5,7 +5,7 @@ import {
   applyTheme, clearLegacyThemeOverride, DEFAULT_ACCENT, readThemeCache, resolveDark, sanitizeTheme, writeThemeCache,
   type ThemeMode, type ThemeValue,
 } from '../lib/theme'
-import { applyAppearance, DEFAULT_APPEARANCE, type Appearance } from '../lib/appearance'
+import { applyAppearance, sanitizeAppearance, DEFAULT_APPEARANCE, type Appearance } from '../lib/appearance'
 import { publicUrl } from '../lib/storage'
 import { useReducedMotion } from '../lib/a11y'
 import type { Settings, Bio, Album, Media } from '../lib/types'
@@ -77,6 +77,7 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   useEffect(() => { clearLegacyThemeOverride() }, [])
 
   const shared = useMemo(() => sanitizeTheme(settings?.theme ?? readThemeCache() ?? FALLBACK_THEME), [settings?.theme])
+  const appearance = useMemo(() => sanitizeAppearance(shared.appearance ?? null), [shared.appearance])
   const [preview, setPreview] = useState<Appearance | null>(null)
   const reduced = useReducedMotion()
   const theme: ThemeValue = useMemo(() => {
@@ -93,8 +94,8 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   useEffect(() => { applyTheme(theme.accent, theme.mode) }, [theme.accent, theme.mode, systemTick])
 
   // Background / fonts / card style (or the editor's unsaved preview)
-  const appearance = preview ?? theme.appearance
-  useEffect(() => { applyAppearance(appearance, publicUrl) }, [appearance])
+  const screenAppearance = preview ?? appearance
+  useEffect(() => { applyAppearance(screenAppearance, publicUrl) }, [screenAppearance])
 
   // Personal comfort settings live on <html> for CSS (never shared with your partner)
   useEffect(() => { document.documentElement.setAttribute('data-reduce-motion', reduced ? 'on' : 'off') }, [reduced])
