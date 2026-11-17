@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Settings2 } from 'lucide-react'
 import { useSite } from '../context/SiteContext'
+import { sanitizeAppearance } from '../lib/appearance'
 import { OPENING_OPTIONS, type OpeningKind } from '../lib/opening'
 import { OpeningPreview } from './OpeningPreview'
 
@@ -27,16 +28,16 @@ export function OpeningSelector({ className }: Props) {
 
   const selectAnimation = (kind: OpeningKind) => {
     setPreviewKind(kind)
-    updateTheme({ appearance: { ...theme.appearance, opening: { kind, speed: previewSpeed } } }, { immediate: true, quiet: true })
+    updateTheme({ appearance: sanitizeAppearance({ ...theme.appearance, opening: { kind, speed: previewSpeed } }) }, { immediate: true, quiet: true })
   }
 
   const setSpeed = (speed: number) => {
     setPreviewSpeed(speed)
-    updateTheme({ appearance: { ...theme.appearance, opening: { kind: previewKind, speed } } }, { immediate: true, quiet: true })
+    updateTheme({ appearance: sanitizeAppearance({ ...theme.appearance, opening: { kind: previewKind, speed } }) }, { immediate: true, quiet: true })
   }
 
   const save = () => {
-    updateTheme({ appearance: { ...theme.appearance, opening: { kind: previewKind, speed: previewSpeed } } }, { quiet: true })
+    updateTheme({ appearance: sanitizeAppearance({ ...theme.appearance, opening: { kind: previewKind, speed: previewSpeed } }) }, { quiet: true })
     setIsOpen(false)
   }
 

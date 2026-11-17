@@ -97,6 +97,12 @@ export function SiteProvider({ children }: { children: ReactNode }) {
   const screenAppearance = preview ?? appearance
   useEffect(() => { applyAppearance(screenAppearance, publicUrl) }, [screenAppearance])
 
+  // Sync the chosen opening kind into localStorage so door gating on refresh works
+  useEffect(() => {
+    if (!isMember) return
+    import('../lib/appearance').then((m) => m.setOpeningKind(appearance.opening.kind))
+  }, [appearance.opening.kind, isMember])
+
   // Personal comfort settings live on <html> for CSS (never shared with your partner)
   useEffect(() => { document.documentElement.setAttribute('data-reduce-motion', reduced ? 'on' : 'off') }, [reduced])
 
@@ -126,7 +132,9 @@ export function SiteProvider({ children }: { children: ReactNode }) {
         }
         if (!cur) throw new Error('Site settings not found.')
         try {
-          await updateRow<Settings>('settings', 'id', cur.id, cur.version, { theme: { ...cur.theme, ...sanitizeTheme(cur.theme), ...patch } })
+          // Sanitize the full appearance before writing: the DB row may have been saved by older
+          // code that omitted the `animations` sub-key, and components crash on a missing one.
+          await updateRow<Settings>('settings', 'id', cur.id, cur.version, { theme: { ...cur.theme, ...sanitizeTheme(cur.theme), appearance: sanitizeAppearance(cur.theme?.appearance ?? null), ...patch } })
           break
         } catch (e) {
           if (e instanceof ConflictError && attempt < 3) { attempt++; continue }

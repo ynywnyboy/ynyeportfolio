@@ -40,6 +40,13 @@ export function formatCreatedOn(iso: string | undefined | null): string | null {
 
 /** Should the door show on this page load? Every visit, but never during auth redirects / password recovery. */
 export function shouldShowDoorOnLoad(pathname: string, search: string, hash: string): boolean {
+  // Read opening kind from localStorage (set by theme updates on save)
+  let openingKind: string | null = null
+  if (typeof window === 'undefined') return false
+  try { openingKind = localStorage.getItem('olw-opening-kind') } catch {}
+  // If door is disabled in settings, never show it
+  if (openingKind === 'disabled') return false
+
   void pathname
   if (/access_token|refresh_token|type=recovery|error_description/.test(hash)) return false
   if (/[?&](code|error|error_description)=/.test(search)) return false

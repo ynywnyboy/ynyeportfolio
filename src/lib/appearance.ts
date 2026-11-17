@@ -256,6 +256,11 @@ export function sanitizeAppearance(raw: unknown): Appearance {
 
 const bool = (v: unknown, d: boolean) => (typeof v === 'boolean' ? v : d)
 
+/** Persist the chosen opening animation kind into localStorage so door gating works across reloads. */
+export function setOpeningKind(kind: OpeningKind): void {
+  try { localStorage.setItem('olw-opening-kind', kind) } catch {}
+}
+
 export function sanitizeAnimations(raw: unknown): AnimationsConfig {
   const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, any>
   const out: Record<string, unknown> = {}
