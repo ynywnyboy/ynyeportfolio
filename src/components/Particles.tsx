@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
-import { motionFactor, type DecoKind, type MotionLevel } from '../lib/appearance'
+import { motionFactor, type AnimationGroupKey, type DecoKind, type MotionLevel } from '../lib/appearance'
 import { useReducedMotion } from '../lib/a11y'
+import { useSite } from '../context/SiteContext'
 
 const HEART_GLYPHS = ['♥', '♡', '♥', '♡']
 const STAR_GLYPHS = ['✦', '✧', '★', '·']
@@ -25,8 +26,10 @@ interface Item { id: number; kind: DecoKind; glyph: string; left: number; size: 
  * Floating decorations (hearts, stars, flowers, petals, butterflies, bubbles, pixels).
  * CSS transform/opacity animations only.
  */
-export function Particles({ enabled = true, kinds = ['hearts', 'stars'], motion = 'normal' }: { enabled?: boolean; kinds?: DecoKind[]; motion?: MotionLevel }) {
+export function Particles({ enabled = true, kinds = ['hearts', 'stars'], motion = 'normal', group = 'backgroundParticles' }: { enabled?: boolean; kinds?: DecoKind[]; motion?: MotionLevel; group?: AnimationGroupKey }) {
   const reduced = useReducedMotion()
+  const { appearance } = useSite()
+  const cfg = appearance.animations[group]
   const factor = motionFactor(motion)
   const total = Math.min(48, Math.round(22 * factor))
   const key = kinds.join(',')
@@ -50,9 +53,12 @@ export function Particles({ enabled = true, kinds = ['hearts', 'stars'], motion 
     })
   }, [key, total])
 
-  if (!enabled || reduced || factor === 0 || !items.length) return null
+  if (!enabled || !cfg.enabled || reduced || factor === 0 || !items.length) return null
   const anim = (k: DecoKind) => (k === 'petals' ? 'animate-petalfall' : k === 'butterflies' ? 'animate-flutter' : k === 'pixels' ? 'animate-pixelrise' : 'animate-floaty')
   const color = (tone: number) => (tone === 0 ? '#c3a9ec' : 'var(--accent)')
+  // effective per-item duration: base * speed multiplier, clamped
+  const baseDur = 16
+  const durScale = cfg.duration / baseDur / cfg.speed
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden" style={{ contain: 'strict' }}>
@@ -64,10 +70,10 @@ export function Particles({ enabled = true, kinds = ['hearts', 'stars'], motion 
             left: `${p.left}%`,
             fontSize: p.size,
             lineHeight: 1,
-            animationDuration: `${p.dur}s`,
+            animationDuration: `${(p.dur * durScale).toFixed(2)}s`,
             animationDelay: `${p.delay}s`,
             color: color(p.tone),
-            opacity: 0.6,
+            opacity: Math.max(0.15, 0.6 * cfg.intensity),
             willChange: 'transform, opacity',
           }}
         >

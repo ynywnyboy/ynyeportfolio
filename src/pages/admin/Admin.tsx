@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'motion/react'
 import {
-  LayoutDashboard, UserRound, BookHeart, Images, FolderHeart, Clock, Music, ListChecks, Mail, HeartHandshake, Palette, Settings, Menu, X, ChevronDown,
+  LayoutDashboard, UserRound, BookHeart, Images, FolderHeart, Clock, Music, ListChecks, Mail, HeartHandshake, Palette, Settings, Sparkles, Menu, X, ChevronDown,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useSite } from '../../context/SiteContext'
@@ -14,6 +14,7 @@ import { BucketListView } from '../../components/BucketListView'
 import { LettersView } from '../../components/LettersView'
 import { Spinner } from '../../components/ui'
 import { RelationshipSettings, ThemeSettings, AccountSettings } from './Settings'
+import { AnimationSettings } from './AnimationSettings'
 import { CustomizeWorld } from '../../components/CustomizeWorld'
 
 const nav = [
@@ -28,6 +29,7 @@ const nav = [
   { to: 'letters', label: 'Letters', icon: Mail, section: 'Messages', private: true },
   { to: 'relationship', label: 'Relationship', icon: HeartHandshake, section: 'Settings' },
   { to: 'theme', label: 'Theme', icon: Palette, section: 'Settings' },
+  { to: 'animations', label: 'Animations', icon: Sparkles, section: 'Settings' },
   { to: 'account', label: 'Account', icon: Settings, section: 'Settings' },
 ]
 
@@ -220,6 +222,7 @@ export default function Admin() {
                   </div>
                 </Panel>
               } />
+              <Route path="animations" element={<Panel title="Animation settings"><AnimationSettings /></Panel>} />
               <Route path="account" element={<Panel title="Account settings"><AccountSettings /></Panel>} />
             </Routes>
           </main>

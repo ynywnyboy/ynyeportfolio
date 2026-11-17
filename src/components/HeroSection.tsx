@@ -39,9 +39,12 @@ function FloatingPhotoCard({ config, img, index, visible, className }: {
   className?: string
 }) {
   const reduced = useReducedMotion()
+  const { appearance } = useSite()
+  const imgAnim = appearance.animations.floatingImages
   const entry = 0.8 + index * 0.15
 
-  if (reduced || !visible) {
+  // Enabled toggle + OS reduced-motion both collapse to a static card.
+  if (reduced || !imgAnim.enabled || !visible) {
     return (
       <div
         className="rounded-2xl shadow-lg overflow-hidden"
@@ -68,12 +71,12 @@ function FloatingPhotoCard({ config, img, index, visible, className }: {
     >
       {/* Continuous independent float */}
       <motion.div
-        animate={{ y: [0, -config.floatAmp, 0] }}
+        animate={{ y: [0, -config.floatAmp * imgAnim.intensity, 0] }}
         transition={{
-          duration: config.floatSpeed,
-          repeat: Infinity,
+          duration: config.floatSpeed * (imgAnim.duration / 4.5) / imgAnim.speed,
+          repeat: imgAnim.loop ? Infinity : 1,
           ease: 'easeInOut',
-          delay: config.floatDelay,
+          delay: config.floatDelay + imgAnim.delay,
         }}
         className="h-full w-full"
         style={{ transformStyle: 'preserve-3d' }}
@@ -194,6 +197,10 @@ function MemoryConveyor({ images, config }: {
   config: PhotoConfig[]
 }) {
   const reduced = useReducedMotion()
+  const { appearance } = useSite()
+  const cv = appearance.animations.conveyor
+  // effective cycle: base duration (seconds) scaled by speed
+  const cycleSec = Math.max(1, cv.duration / cv.speed)
 
   // Fixed-size deque of 6 images — one per card slot, never unmount/remount.
   // At each interval (8 s = one CSS cycle), one image exits and one enters,
@@ -219,11 +226,11 @@ function MemoryConveyor({ images, config }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images])
 
-  // Stream one image every CSS cycle (8 s). Cards are stable-keyed so no
+  // Stream one image every CSS cycle. Cards are stable-keyed so no
   // unmount/remount — only the `img` prop changes on a single slot per tick.
   useEffect(() => {
-    if (reduced || !images.length) return
-    const CYCLE = 8000
+    if (reduced || !cv.enabled || !cv.loop || !images.length) return
+    const CYCLE = cycleSec * 1000
     intervalRef.current = setInterval(() => {
       setBatch(prev => {
         const q = queueRef.current
@@ -253,9 +260,9 @@ function MemoryConveyor({ images, config }: {
     }, CYCLE)
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [images, reduced])
+  }, [images, reduced, cv.enabled, cv.loop, cycleSec])
 
-  if (reduced || !images.length || batch.length === 0) {
+  if (reduced || !cv.enabled || !images.length || batch.length === 0) {
     return (
       <div className="grid grid-cols-2 gap-2 w-fit mx-auto">
         {config.map((cfg, i) => (
@@ -281,9 +288,10 @@ function MemoryConveyor({ images, config }: {
       style={{ height: Math.ceil(tripled.length / 2) * CARD_H }}
     >
       <div
-        className="grid grid-cols-2 gap-2 w-fit mx-auto"
+        className="memory-conveyor-scroll grid grid-cols-2 gap-2 w-fit mx-auto"
         style={{
-          animation: 'memory-conveyor 8s linear infinite',
+          animation: 'memory-conveyor linear infinite',
+          animationDuration: `${cycleSec}s`,
           willChange: 'transform',
         }}
       >
@@ -325,9 +333,11 @@ const LED_MESSAGES = [
 
 function LEDMarquee() {
   const reduced = useReducedMotion()
+  const { appearance } = useSite()
+  const mq = appearance.animations.marquee
   const combined = [...LED_MESSAGES, ...LED_MESSAGES].join('')
 
-  if (reduced) {
+  if (reduced || !mq.enabled) {
     return (
       <div className="bg-neutral-900 py-2.5 px-4 max-w-3xl mx-auto overflow-hidden rounded-lg">
         <p className="text-green-400 font-mono text-xs tracking-widest whitespace-nowrap opacity-80">
@@ -337,12 +347,18 @@ function LEDMarquee() {
     )
   }
 
+  const dur = Math.max(1, mq.duration / mq.speed)
+  const keyframe = mq.direction === 'right' ? 'led-scroll-right' : 'led-scroll'
+
   return (
     <div className="bg-neutral-900 py-2.5 overflow-hidden relative">
       <div className="absolute top-0 left-1/4 right-1/4 h-px bg-green-500/25" />
       <div className="absolute bottom-0 left-1/4 right-1/4 h-px bg-green-500/25" />
       <div className="max-w-3xl mx-auto overflow-hidden px-4">
-        <div className="flex whitespace-nowrap" style={{ animation: 'led-scroll 28s linear infinite' }}>
+        <div
+          className="led-marquee-scroll flex whitespace-nowrap"
+          style={{ animation: `${keyframe} linear ${mq.loop ? 'infinite' : 'forwards'}`, animationDuration: `${dur}s`, animationDelay: `${mq.delay}s` }}
+        >
           {combined.split('').map((ch, i) => (
             <span
               key={i}
@@ -634,6 +650,9 @@ const FLOAT_DECORATIONS = ['♡', '✦', '❋', '✿', '°', '·']
 
 function FloatingDecor() {
   const reduced = useReducedMotion()
+  const { appearance } = useSite()
+  const fe = appearance.animations.floatingElements
+  // Per-item axis for direction=random, chosen by index so renders stay stable.
   const items = useMemo(() =>
     Array.from({ length: 8 }, (_, i) => ({
       char: FLOAT_DECORATIONS[i % FLOAT_DECORATIONS.length],
@@ -642,28 +661,39 @@ function FloatingDecor() {
       delay: i * 0.4,
       size: 12 + (i % 3) * 4,
       opacity: 0.2 + (i % 4) * 0.1,
+      axis: (i % 2 === 0 ? 'y' : 'x') as 'x' | 'y',
     })), [])
 
-  if (reduced) return null
+  if (reduced || !fe.enabled) return null
+
+  const amp = 8 * fe.intensity
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden select-none" aria-hidden="true">
-      {items.map((d, i) => (
-        <motion.span
-          key={i}
-          className="absolute text-blush-400/40 dark:text-blush-300/30"
-          style={{ left: d.left, top: d.top, fontSize: d.size }}
-          initial={{ opacity: 0, y: 0 }}
-          animate={{
-            opacity: [d.opacity, d.opacity * 1.5, d.opacity],
-            y: [-8, 8, -8],
-            rotate: [-5, 5, -5],
-          }}
-          transition={{ duration: 4 + i * 0.3, repeat: Infinity, delay: d.delay }}
-        >
-          {d.char}
-        </motion.span>
-      ))}
+      {items.map((d, i) => {
+        const dir = fe.direction === 'random' ? d.axis : fe.direction === 'horizontal' ? 'x' : fe.direction === 'diagonal' ? 'both' : 'y'
+        const vec = dir === 'both' ? { x: [-amp, amp, -amp], y: [-amp, amp, -amp] } : dir === 'x' ? { x: [-amp, amp, -amp] } : { y: [-amp, amp, -amp] }
+        return (
+          <motion.span
+            key={i}
+            className="absolute text-blush-400/40 dark:text-blush-300/30"
+            style={{ left: d.left, top: d.top, fontSize: d.size }}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: [d.opacity, d.opacity * 1.5, d.opacity],
+              rotate: [-5, 5, -5],
+              ...vec,
+            }}
+            transition={{
+              duration: (4 + i * 0.3) * (fe.duration / 4) / fe.speed,
+              repeat: fe.loop ? Infinity : 1,
+              delay: d.delay + fe.delay,
+            }}
+          >
+            {d.char}
+          </motion.span>
+        )
+      })}
     </div>
   )
 }

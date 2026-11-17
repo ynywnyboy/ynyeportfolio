@@ -1,14 +1,14 @@
 {
   ".claude/settings.json": {
-    "mtime": 1794358303.2878296,
-    "seen": 1794359420.7411199,
-    "ast_hash": "e4f0022d8293814352e62cda3ec7f8b2",
+    "mtime": 1794839247.9681604,
+    "seen": 1794888335.2636023,
+    "ast_hash": "6b2f2a9db6abe213543f89759966ae54",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1794745005.1532426,
-    "seen": 1794818966.9417112,
-    "ast_hash": "b122c286b005601a335e15c31e19e58c",
+    "mtime": 1794837462.9872563,
+    "seen": 1794888335.2636118,
+    "ast_hash": "c0d411fe5f39f4aa5a9d94f2f9d9e50c",
     "semantic_hash": ""
   },
   "postcss.config.js": {
@@ -24,9 +24,9 @@
     "semantic_hash": ""
   },
   "src/components/BackgroundEffect.tsx": {
-    "mtime": 1793884196.8885293,
-    "seen": 1794359420.7411354,
-    "ast_hash": "306be8a3c14f705a5159aeb496c9a98d",
+    "mtime": 1794878073.263131,
+    "seen": 1794888335.2641225,
+    "ast_hash": "3540a8a85671b0ce56e668bfa35444b3",
     "semantic_hash": ""
   },
   "src/components/BioEditor.tsx": {
@@ -48,9 +48,9 @@
     "semantic_hash": ""
   },
   "src/components/CustomizeWorld.tsx": {
-    "mtime": 1794407684.7037418,
-    "seen": 1794705061.7784245,
-    "ast_hash": "6b113b3433b79eb8e65056b93f8b8f57",
+    "mtime": 1794829833.5327919,
+    "seen": 1794888335.264613,
+    "ast_hash": "34e5184cddd677bd4eb8ba40d1285e56",
     "semantic_hash": ""
   },
   "src/components/Envelope.tsx": {
@@ -102,21 +102,15 @@
     "semantic_hash": ""
   },
   "src/components/Particles.tsx": {
-    "mtime": 1793884196.7967334,
-    "seen": 1794359420.741168,
-    "ast_hash": "83ac28abb77dd9dfdc4d3eea3fee8ed8",
+    "mtime": 1794878066.3491113,
+    "seen": 1794888335.2661302,
+    "ast_hash": "e462defab317b4a270a7d45b8182ad9d",
     "semantic_hash": ""
   },
   "src/components/Reveal.tsx": {
     "mtime": 1793884196.8586764,
     "seen": 1794359420.7411697,
     "ast_hash": "7698d2348de6b490d318e6be594b5370",
-    "semantic_hash": ""
-  },
-  "src/components/SafeImage.tsx": {
-    "mtime": 1793884196.8212242,
-    "seen": 1794359420.7411711,
-    "ast_hash": "4b7b4dbe94b1085666dd7c245d0b0ef1",
     "semantic_hash": ""
   },
   "src/components/TimelineManager.tsx": {
@@ -234,9 +228,9 @@
     "semantic_hash": ""
   },
   "src/context/SiteContext.tsx": {
-    "mtime": 1794731724.0829632,
-    "seen": 1794818966.949258,
-    "ast_hash": "df466e4fc0d2dc0bfbdd71bf8d7935dd",
+    "mtime": 1794829736.89771,
+    "seen": 1794888335.269681,
+    "ast_hash": "ffe538edc40ee581a8fc2acc7b8922b7",
     "semantic_hash": ""
   },
   "src/context/ToastContext.tsx": {
@@ -246,15 +240,15 @@
     "semantic_hash": ""
   },
   "src/lib/a11y.ts": {
-    "mtime": 1794731723.9143598,
-    "seen": 1794818966.9494107,
-    "ast_hash": "6b95e786dc86ff45dc7b95c71c319e53",
+    "mtime": 1794877058.4069386,
+    "seen": 1794888335.2698333,
+    "ast_hash": "cd0dfb28509746cd50f6c63041557f03",
     "semantic_hash": ""
   },
   "src/lib/appearance.ts": {
-    "mtime": 1794401572.7951972,
-    "seen": 1794705061.7830057,
-    "ast_hash": "5997e9f2fa85d5fcb91c12a30fb58f78",
+    "mtime": 1794888201.5619948,
+    "seen": 1794888335.2698357,
+    "ast_hash": "9995461dab6661c1807ab030580686e0",
     "semantic_hash": ""
   },
   "src/lib/bgEffects.ts": {
@@ -273,12 +267,6 @@
     "mtime": 1793884197.0874774,
     "seen": 1794359420.7412217,
     "ast_hash": "2cf1afdb054d4fd309ea6094e306ea5b",
-    "semantic_hash": ""
-  },
-  "src/lib/perf.ts": {
-    "mtime": 1793884197.124956,
-    "seen": 1794359420.741223,
-    "ast_hash": "a24cfb2662bbfbd7130d7b4185ea514f",
     "semantic_hash": ""
   },
   "src/lib/room.ts": {
@@ -540,9 +528,9 @@
     "semantic_hash": ""
   },
   "src/main.tsx": {
-    "mtime": 1794752062.4115257,
-    "seen": 1794818966.9570472,
-    "ast_hash": "0120bc80a313d54fd0c0e3b7c104733f",
+    "mtime": 1794829588.40512,
+    "seen": 1794888335.2766767,
+    "ast_hash": "38aec20c74537047ee72e371ad094367",
     "semantic_hash": ""
   },
   "src/pages/BucketList.tsx": {
@@ -606,9 +594,9 @@
     "semantic_hash": ""
   },
   "src/pages/admin/Admin.tsx": {
-    "mtime": 1794407898.311803,
-    "seen": 1794705061.789759,
-    "ast_hash": "d5f73931f7999a0b1b98428052357879",
+    "mtime": 1794878289.4384553,
+    "seen": 1794888335.2782514,
+    "ast_hash": "2763be1d0434f0afb05dbc235fb4dbee",
     "semantic_hash": ""
   },
   "src/pages/admin/Settings.tsx": {
@@ -630,9 +618,9 @@
     "semantic_hash": ""
   },
   "vite.config.ts": {
-    "mtime": 1794744445.106609,
-    "seen": 1794818966.9592683,
-    "ast_hash": "cc996bb5bdcae64addda43f8e9df8618",
+    "mtime": 1794831485.079558,
+    "seen": 1794888335.2786455,
+    "ast_hash": "1fb5507740cf1cfe0617a6590121f4b3",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -648,9 +636,9 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1794754420.7523432,
-    "seen": 1794818966.9595764,
-    "ast_hash": "ab6be9ab0961a9eecf525fd8d7b98b2c",
+    "mtime": 1794829684.0594919,
+    "seen": 1794888335.2790558,
+    "ast_hash": "3ac567b0e8c0de46cbc2da4c1cd6cfe8",
     "semantic_hash": ""
   },
   "src/components/DigitalClock.tsx": {
@@ -660,9 +648,9 @@
     "semantic_hash": ""
   },
   "src/components/HeroSection.tsx": {
-    "mtime": 1794704969.4719508,
-    "seen": 1794705061.7785513,
-    "ast_hash": "7e4088b7391fdc48e14dca8603e32802",
+    "mtime": 1794877988.1049497,
+    "seen": 1794888335.265049,
+    "ast_hash": "eb0ac5799fd7cde02875f65cfb79f72e",
     "semantic_hash": ""
   },
   "src/components/OpeningPreview.tsx": {
@@ -725,10 +713,16 @@
     "ast_hash": "7ac126095f340017089450b2c004599c",
     "semantic_hash": ""
   },
+  "src/pages/admin/AnimationSettings.tsx": {
+    "mtime": 1794888062.5169346,
+    "seen": 1794888335.2782543,
+    "ast_hash": "9ad4207cc5c66fde1705cea27ed9e05d",
+    "semantic_hash": ""
+  },
   "package-lock.json": {
-    "mtime": 1794745005.2571182,
-    "seen": 1794818966.95958,
-    "ast_hash": "e63130115482b9007db42b412c80ed13",
+    "mtime": 1794837564.2872047,
+    "seen": 1794888335.2790594,
+    "ast_hash": "18a5195492662e0f1ade24144698c51a",
     "semantic_hash": ""
   }
 }

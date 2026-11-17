@@ -11,8 +11,32 @@ export type CardStyle = 'rounded' | 'scrapbook' | 'polaroid' | 'glass' | 'minima
 export type ShadowLevel = 'none' | 'soft' | 'dreamy'
 export type DecoKind = 'hearts' | 'stars' | 'flowers' | 'petals' | 'butterflies' | 'bubbles' | 'pixels'
 export type EffectKind = 'none' | 'rain' | 'petals' | 'snow' | 'stars' | 'fireflies' | 'waves'
+export type FloatDirection = 'vertical' | 'horizontal' | 'diagonal' | 'random'
+export type HoverDirection = 'up' | 'down' | 'left' | 'right' | 'scale' | 'tilt'
+export type ParticleDir = 'up' | 'down' | 'left' | 'right' | 'floating'
 
 export type OpeningKind = 'door' | 'envelope' | 'gift' | 'book' | 'polaroid' | 'curtain' | 'window' | 'liquid-glass' | 'dreamy-fade' | 'cinematic' | 'particle' | 'bubble-pop' | 'sliding-panels' | 'heart' | 'disabled'
+
+export interface AnimationConfig { enabled: boolean; speed: number; intensity: number; duration: number; delay: number; loop: boolean }
+export interface FloatingElementsConfig extends AnimationConfig { direction: FloatDirection }
+export interface ConveyorConfig extends AnimationConfig { direction: 'up' | 'down' }
+export interface MarqueeConfig extends AnimationConfig { direction: 'left' | 'right' }
+export interface RotatingDecorConfig extends AnimationConfig { direction: 'cw' | 'ccw' }
+export interface BgParticlesConfig extends AnimationConfig { direction: ParticleDir }
+export interface CardHoverConfig extends AnimationConfig { direction: HoverDirection }
+export interface PulseConfig extends AnimationConfig { direction: 'opacity' | 'scale' | 'both' }
+export interface AnimationsConfig {
+  floatingElements: FloatingElementsConfig
+  floatingImages: AnimationConfig
+  conveyor: ConveyorConfig
+  marquee: MarqueeConfig
+  rotatingDecor: RotatingDecorConfig
+  backgroundParticles: BgParticlesConfig
+  cardHover: CardHoverConfig
+  pulse: PulseConfig
+}
+export type AnimationGroupKey = keyof AnimationsConfig
+export type AnimationPresetName = 'calm' | 'dreamy' | 'playful' | 'floatingWorld' | 'continuousMotion' | 'minimal'
 
 export interface Appearance {
   bg: { kind: BgKind; color: string; from: string; to: string; angle: number; preset: string; image: string; dim: number }
@@ -22,6 +46,7 @@ export interface Appearance {
   card: { style: CardStyle; shadow: ShadowLevel; glow: boolean }
   effect: { kind: EffectKind; enabled: boolean; speed: number; density: number; opacity: number; intensity: number }
   opening: { kind: OpeningKind; speed: number }
+  animations: AnimationsConfig
 }
 
 export interface SavedTheme { id: string; name: string; appearance: Appearance }
@@ -111,6 +136,36 @@ export const BG_PRESETS: BgPreset[] = [
 ]
 
 // ---- defaults & theme presets ------------------------------------------------
+export const DEFAULT_ANIMATIONS: AnimationsConfig = {
+  floatingElements: { enabled: true, speed: 1, intensity: 1, duration: 4, delay: 0, loop: true, direction: 'vertical' },
+  floatingImages: { enabled: true, speed: 1, intensity: 1, duration: 4.5, delay: 0, loop: true },
+  conveyor: { enabled: true, speed: 1, intensity: 1, duration: 8, delay: 0, loop: true, direction: 'down' },
+  marquee: { enabled: true, speed: 1, intensity: 1, duration: 28, delay: 0, loop: true, direction: 'left' },
+  rotatingDecor: { enabled: true, speed: 1, intensity: 1, duration: 60, delay: 0, loop: true, direction: 'cw' },
+  backgroundParticles: { enabled: true, speed: 1, intensity: 1, duration: 16, delay: 0, loop: true, direction: 'up' },
+  cardHover: { enabled: true, speed: 1, intensity: 1, duration: 0.3, delay: 0, loop: false, direction: 'up' },
+  pulse: { enabled: true, speed: 1, intensity: 1, duration: 1.4, delay: 0, loop: true, direction: 'scale' },
+}
+
+export const ANIMATION_CATALOG: { group: string; items: { key: AnimationGroupKey; label: string; desc: string; hasDirection: boolean }[] }[] = [
+  { group: 'Floating Animations', items: [
+    { key: 'floatingElements', label: 'Floating decorations', desc: 'Gentle up-and-down drift of the hearts, stars and flowers that float across every page.', hasDirection: true },
+    { key: 'floatingImages', label: 'Floating images', desc: 'Soft bobbing of the photo cards on the home page.', hasDirection: false },
+  ] },
+  { group: 'Continuous Animations', items: [
+    { key: 'conveyor', label: 'Image conveyor', desc: 'The scrolling photo conveyor on the home page.', hasDirection: true },
+    { key: 'marquee', label: 'LED marquee loop', desc: 'The scrolling text banner under the hero.', hasDirection: true },
+    { key: 'rotatingDecor', label: 'Rotating decorations', desc: 'Slowly spinning halo behind the front-door opening.', hasDirection: true },
+  ] },
+  { group: 'Interactive Animations', items: [
+    { key: 'cardHover', label: 'Card hover effects', desc: 'Subtle movement when hovering over cards and navigation tiles.', hasDirection: true },
+    { key: 'pulse', label: 'Soft pulsing', desc: 'Gentle heartbeat pulse on the title heart and CTA glows.', hasDirection: true },
+  ] },
+  { group: 'Background Animations', items: [
+    { key: 'backgroundParticles', label: 'Background particles', desc: 'Ambient floating particles behind the page content.', hasDirection: true },
+  ] },
+]
+
 export const DEFAULT_APPEARANCE: Appearance = {
   bg: { kind: 'default', color: '#fff5f7', from: '#fff1f4', to: '#e9defa', angle: 160, preset: 'blush-haze', image: '', dim: 0.15 },
   fonts: { heading: 'default', body: 'default' },
@@ -119,6 +174,7 @@ export const DEFAULT_APPEARANCE: Appearance = {
   card: { style: 'rounded', shadow: 'soft', glow: false },
   effect: { kind: 'none', enabled: false, speed: 1, density: 1, opacity: 0.6, intensity: 1 },
   opening: { kind: 'door', speed: 1 },
+  animations: DEFAULT_ANIMATIONS,
 }
 
 type Deep<T> = { [K in keyof T]?: T[K] extends object ? (T[K] extends unknown[] ? T[K] : Deep<T[K]>) : T[K] }
@@ -130,6 +186,7 @@ const make = (p: Deep<Appearance>): Appearance => ({
   card: { ...DEFAULT_APPEARANCE.card, ...p.card } as Appearance['card'],
   effect: { ...DEFAULT_APPEARANCE.effect, ...p.effect } as Appearance['effect'],
   opening: { ...DEFAULT_APPEARANCE.opening, ...p.opening } as Appearance['opening'],
+  animations: { ...DEFAULT_APPEARANCE.animations, ...(p.animations as AnimationsConfig | undefined) } as AnimationsConfig,
 })
 
 export interface ThemePreset { id: string; name: string; emoji: string; blurb: string; accent: string; appearance: Appearance }
@@ -193,7 +250,75 @@ export function sanitizeAppearance(raw: unknown): Appearance {
       kind: oneOf(op.kind, ['door', 'envelope', 'gift', 'book', 'polaroid', 'curtain', 'window', 'liquid-glass', 'dreamy-fade', 'cinematic', 'particle', 'bubble-pop', 'sliding-panels', 'heart', 'disabled'] as const, d.opening.kind),
       speed: num(op.speed, 1, 0.5, 2),
     },
+    animations: sanitizeAnimations(r.animations),
   }
+}
+
+const bool = (v: unknown, d: boolean) => (typeof v === 'boolean' ? v : d)
+
+export function sanitizeAnimations(raw: unknown): AnimationsConfig {
+  const r = (raw && typeof raw === 'object' ? raw : {}) as Record<string, any>
+  const out: Record<string, unknown> = {}
+  for (const key of Object.keys(DEFAULT_ANIMATIONS) as AnimationGroupKey[]) {
+    const d = DEFAULT_ANIMATIONS[key] as AnimationsConfig[AnimationGroupKey]
+    const g = (r[key] && typeof r[key] === 'object' ? r[key] : {}) as Record<string, any>
+    const grp: Record<string, unknown> = {
+      enabled: bool(g.enabled, d.enabled),
+      speed: num(g.speed, d.speed, 0.2, 3),
+      intensity: num(g.intensity, d.intensity, 0, 2),
+      duration: num(g.duration, d.duration, 0.1, 120),
+      delay: num(g.delay, d.delay, 0, 10),
+      loop: bool(g.loop, d.loop),
+    }
+    // Only top-level configs that declare `direction` carry it forward.
+    if (key === 'floatingElements') grp.direction = oneOf(g.direction, ['vertical', 'horizontal', 'diagonal', 'random'] as const, (d as FloatingElementsConfig).direction)
+    if (key === 'conveyor') grp.direction = oneOf(g.direction, ['up', 'down'] as const, (d as ConveyorConfig).direction)
+    if (key === 'marquee') grp.direction = oneOf(g.direction, ['left', 'right'] as const, (d as MarqueeConfig).direction)
+    if (key === 'rotatingDecor') grp.direction = oneOf(g.direction, ['cw', 'ccw'] as const, (d as RotatingDecorConfig).direction)
+    if (key === 'backgroundParticles') grp.direction = oneOf(g.direction, ['up', 'down', 'left', 'right', 'floating'] as const, (d as BgParticlesConfig).direction)
+    if (key === 'cardHover') grp.direction = oneOf(g.direction, ['up', 'down', 'left', 'right', 'scale', 'tilt'] as const, (d as CardHoverConfig).direction)
+    if (key === 'pulse') grp.direction = oneOf(g.direction, ['opacity', 'scale', 'both'] as const, (d as PulseConfig).direction)
+    out[key] = grp as unknown as AnimationsConfig[AnimationGroupKey]
+  }
+  return out as unknown as AnimationsConfig
+}
+
+// ---- animation presets -------------------------------------------------------
+type AnimLevel = { speed: number; intensity: number; duration: number }
+const animLevel = (level: AnimLevel): AnimationsConfig => {
+  const out: Record<string, unknown> = {}
+  for (const key of Object.keys(DEFAULT_ANIMATIONS) as AnimationGroupKey[]) {
+    const base = DEFAULT_ANIMATIONS[key] as AnimationsConfig[AnimationGroupKey]
+    out[key] = { ...base, speed: level.speed, intensity: level.intensity, duration: base.duration * level.duration }
+  }
+  return out as unknown as AnimationsConfig
+}
+
+export interface AnimationPreset { id: AnimationPresetName; name: string; emoji: string; blurb: string; animations: AnimationsConfig }
+
+export const ANIMATION_PRESETS: AnimationPreset[] = [
+  { id: 'calm', name: 'Calm', emoji: '🕊️', blurb: 'Slow, gentle, barely-there movement',
+    animations: (() => { const a = animLevel({ speed: 0.6, intensity: 0.6, duration: 1.6 }); a.conveyor.enabled = true; a.rotatingDecor.enabled = false; a.pulse.enabled = false; return a })() },
+  { id: 'dreamy', name: 'Dreamy', emoji: '🌙', blurb: 'Soft floating with long, drifting loops',
+    animations: (() => { const a = animLevel({ speed: 0.8, intensity: 1.2, duration: 1.8 }); a.floatingElements.direction = 'random'; a.backgroundParticles.direction = 'floating'; return a })() },
+  { id: 'playful', name: 'Playful', emoji: '🎈', blurb: 'Faster, bouncier, more motion everywhere',
+    animations: (() => { const a = animLevel({ speed: 1.5, intensity: 1.4, duration: 0.6 }); a.floatingElements.direction = 'diagonal'; a.cardHover.direction = 'tilt'; return a })() },
+  { id: 'floatingWorld', name: 'Floating World', emoji: '🫧', blurb: 'Everything gently floats — images, decor, particles',
+    animations: (() => { const a = animLevel({ speed: 1, intensity: 1.3, duration: 1.2 }); a.floatingElements.direction = 'vertical'; a.backgroundParticles.direction = 'floating'; a.cardHover.direction = 'up'; return a })() },
+  { id: 'continuousMotion', name: 'Continuous Motion', emoji: '♾️', blurb: 'Conveyors, marquees and loops always running',
+    animations: (() => { const a = animLevel({ speed: 1.2, intensity: 1, duration: 0.8 }); for (const k of Object.keys(a) as AnimationGroupKey[]) a[k].loop = true; a.floatingElements.enabled = false; a.floatingImages.enabled = false; return a })() },
+  { id: 'minimal', name: 'Minimal', emoji: '⚪', blurb: 'Almost nothing moves — just card hover',
+    animations: (() => { const a = animLevel({ speed: 1, intensity: 0.5, duration: 1 }); for (const k of Object.keys(a) as AnimationGroupKey[]) a[k].enabled = false; a.cardHover.enabled = true; return a })() },
+]
+
+export const ANIMATION_DIRECTION_OPTIONS: Record<string, { id: string; label: string }[]> = {
+  floatingElements: [{ id: 'vertical', label: 'Up & down' }, { id: 'horizontal', label: 'Side to side' }, { id: 'diagonal', label: 'Diagonal' }, { id: 'random', label: 'Random' }],
+  conveyor: [{ id: 'down', label: 'Downward' }, { id: 'up', label: 'Upward' }],
+  marquee: [{ id: 'left', label: 'Left' }, { id: 'right', label: 'Right' }],
+  rotatingDecor: [{ id: 'cw', label: 'Clockwise' }, { id: 'ccw', label: 'Counter-clockwise' }],
+  backgroundParticles: [{ id: 'up', label: 'Rising' }, { id: 'down', label: 'Falling' }, { id: 'left', label: 'Left' }, { id: 'right', label: 'Right' }, { id: 'floating', label: 'Floating' }],
+  cardHover: [{ id: 'up', label: 'Lift up' }, { id: 'down', label: 'Drop down' }, { id: 'left', label: 'Slide left' }, { id: 'right', label: 'Slide right' }, { id: 'scale', label: 'Scale only' }, { id: 'tilt', label: 'Tilt' }],
+  pulse: [{ id: 'scale', label: 'Scale' }, { id: 'opacity', label: 'Fade' }, { id: 'both', label: 'Both' }],
 }
 
 export function sanitizeSaved(raw: unknown): SavedTheme[] {
@@ -231,6 +356,14 @@ export function buildAppearanceVars(a: Appearance, toPublicUrl: (p: string) => s
   const heading = HEADING_FONTS.find((f) => f.id === a.fonts.heading) ?? HEADING_FONTS[0]
   const body = BODY_FONTS.find((f) => f.id === a.fonts.body) ?? BODY_FONTS[0]
   const links = [heading, body].filter((f) => f.gf).map((f) => `https://fonts.googleapis.com/css2?family=${f.gf}&display=swap`)
+  const anim = a.animations
+  // Emit per-group base durations so downstream CSS-only animations stay synced with the JSON state
+  const floatDur = Math.max(0.5, anim.floatingElements.duration / anim.floatingElements.speed)
+  const imageDur = Math.max(0.5, anim.floatingImages.duration / anim.floatingImages.speed)
+  const conveyorDur = Math.max(1, anim.conveyor.duration / anim.conveyor.speed)
+  const marqueeDur = Math.max(1, anim.marquee.duration / anim.marquee.speed)
+  const pulseDur = Math.max(0.3, anim.pulse.duration / anim.pulse.speed)
+  const rotDur = anim.rotatingDecor.enabled ? Math.max(2, anim.rotatingDecor.duration / anim.rotatingDecor.speed) : 0
   return {
     vars: {
       '--olw-bg': css,
@@ -239,6 +372,17 @@ export function buildAppearanceVars(a: Appearance, toPublicUrl: (p: string) => s
       '--olw-dim-dark': `rgba(20, 16, 28, ${isImg ? 0.5 + a.bg.dim * 0.4 : 0.72})`,
       '--font-heading': heading.stack,
       '--font-body': body.stack,
+      // Animation base durations — CSS animations multiply by `animation-duration`.
+      '--olw-floaty-duration': `${floatDur}s`,
+      '--olw-image-float-duration': `${imageDur}s`,
+      '--olw-conveyor-duration': `${conveyorDur}s`,
+      '--olw-marquee-duration': `${marqueeDur}s`,
+      '--olw-pulse-duration': `${pulseDur}s`,
+      '--olw-rotating-decor-duration': rotDur > 0 ? `${rotDur}s` : '0s',
+      // Intensities (0–1 scale for amplitude/opacity multipliers)
+      '--olw-floaty-intensity': `${Math.round(anim.floatingElements.intensity * 100)}%`,
+      '--olw-particle-intensity': `${Math.round(anim.backgroundParticles.intensity * 100)}%`,
+      '--olw-pulse-intensity': `${Math.round(anim.pulse.intensity * 100)}%`,
     },
     attrs: {
       'data-bg': custom ? 'custom' : 'default',
@@ -246,6 +390,16 @@ export function buildAppearanceVars(a: Appearance, toPublicUrl: (p: string) => s
       'data-shadow': a.card.shadow,
       'data-glow': a.card.glow ? 'on' : 'off',
       'data-motion': a.motion,
+      'data-floating-elements': anim.floatingElements.enabled ? 'on' : 'off',
+      'data-floating-images': anim.floatingImages.enabled ? 'on' : 'off',
+      'data-conveyor': anim.conveyor.enabled ? 'on' : 'off',
+      'data-marquee': anim.marquee.enabled ? 'on' : 'off',
+      'data-rotating-decor': anim.rotatingDecor.enabled ? 'on' : 'off',
+      'data-background-particles': anim.backgroundParticles.enabled ? 'on' : 'off',
+      'data-card-hover': anim.cardHover.enabled ? 'on' : 'off',
+      'data-pulse': anim.pulse.enabled ? 'on' : 'off',
+      'data-hover-direction': anim.cardHover.direction,
+      'data-pulse-direction': anim.pulse.direction,
     },
     links: Array.from(new Set(links)),
   }

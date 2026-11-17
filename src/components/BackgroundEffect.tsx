@@ -13,7 +13,8 @@ export function BackgroundEffect() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fx = appearance.effect
   const factor = motionFactor(appearance.motion)
-  const active = fx.enabled && fx.kind !== 'none' && factor > 0
+  // The canvas background is gated by the Animation Settings "Background particles" group.
+  const active = fx.enabled && fx.kind !== 'none' && factor > 0 && appearance.animations.backgroundParticles.enabled
 
   useEffect(() => {
     const canvas = canvasRef.current

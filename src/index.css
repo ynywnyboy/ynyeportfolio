@@ -195,6 +195,10 @@ html[data-glow='on'] .card { box-shadow: 0 0 0 1.5px rgb(var(--blush-300) / 0.85
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
+@keyframes led-scroll-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
 
 .hero-photo-float {
   animation: heroFloat 6s ease-in-out infinite;
@@ -232,4 +236,61 @@ html[data-glow='on'] .card { box-shadow: 0 0 0 1.5px rgb(var(--blush-300) / 0.85
 @keyframes memory-conveyor {
   0% { transform: translateY(0); }
   100% { transform: translateY(-66.666%); }
+}
+
+/* ── Animation Settings: driven by CSS vars emitted by buildAppearanceVars ── */
+html[data-floating-elements="off"] .animate-floaty,
+html[data-floating-elements="off"] .animate-petalfall,
+html[data-floating-elements="off"] .animate-pixelrise,
+html[data-floating-elements="off"] .animate-flutter,
+html[data-floating-elements="off"] .animate-wing,
+html[data-floating-images="off"] .hero-photo-float,
+html[data-conveyor="off"],
+html[data-marquee="off"],
+html[data-rotating-decor="off"],
+html[data-background-particles="off"],
+html[data-pulse="off"] {
+  animation: none !important;
+  animation-play-state: paused !important;
+}
+
+html[data-floating-elements="off"] .animate-floaty,
+html[data-floating-elements="off"] .animate-petalfall,
+html[data-floating-elements="off"] .animate-pixelrise,
+html[data-floating-elements="off"] .animate-flutter,
+html[data-floating-elements="off"] .animate-wing {
+  animation-duration: var(--olw-floaty-duration) !important;
+  opacity: calc(var(--olw-floaty-intensity) / 100) !important;
+}
+
+html[data-conveyor="on"] .animate-memory-conveyor,
+html[data-conveyor="on"] .memory-conveyor-scroll {
+  animation-duration: var(--olw-conveyor-duration) !important;
+}
+
+html[data-marquee="on"] .led-marquee-scroll {
+  animation-duration: var(--olw-marquee-duration) !important;
+}
+
+html[data-pulse="on"] .animate-heartbeat {
+  animation-duration: var(--olw-pulse-duration) !important;
+}
+
+html[data-pulse="on"] .animate-heartbeat[data-pulse-direction="opacity"] {
+  animation-name: heartbeat-opacity;
+}
+@keyframes heartbeat-opacity {
+  0%, 100% { opacity: 1; }
+  50% { opacity: calc(var(--olw-pulse-intensity) / 100); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-reduce-motion="on"] * {
+    animation: none !important;
+    animation-play-state: paused !important;
+    transition: none !important;
+  }
+  html[data-reduce-motion="on"] [style*="motion"] {
+    animation: none !important;
+  }
 }
