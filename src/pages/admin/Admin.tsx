@@ -15,7 +15,6 @@ import { LettersView } from '../../components/LettersView'
 import { Spinner } from '../../components/ui'
 import { RelationshipSettings, ThemeSettings, AccountSettings } from './Settings'
 import { AnimationSettings } from './AnimationSettings'
-import { CustomizeWorld } from '../../components/CustomizeWorld'
 
 const nav = [
   { to: '', label: 'Overview', icon: LayoutDashboard, end: true, section: 'Content' },
@@ -217,9 +216,6 @@ export default function Admin() {
               <Route path="theme" element={
                 <Panel title="Theme customization" subtitle="Personalize how your world looks and feels. Changes are shared with your partner.">
                   <ThemeSettings />
-                  <div className="mt-10">
-                    <CustomizeWorld />
-                  </div>
                 </Panel>
               } />
               <Route path="animations" element={<Panel title="Animation settings"><AnimationSettings /></Panel>} />
