@@ -31,7 +31,7 @@ export function LittleWorldDoor({ open, reduced, onOpen, dateLine, duration = 2.
         transition={open ? { duration: 1.6 } : { duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
       />
 
-      <div className="relative" style={{ height: 'min(44vh, 26rem)', aspectRatio: '3 / 5' }}>
+      <div className="relative" style={{ height: 'min(44vh, 26rem)', width: 'calc(min(44vh, 26rem) * 3 / 5)', aspectRatio: '3 / 5' }}>
         {/* frame */}
         <div
           aria-hidden

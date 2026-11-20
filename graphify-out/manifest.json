@@ -6,9 +6,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1794837462.9872563,
-    "seen": 1794888335.2636118,
-    "ast_hash": "c0d411fe5f39f4aa5a9d94f2f9d9e50c",
+    "mtime": 1794909041.2160072,
+    "seen": 1794915864.3061535,
+    "ast_hash": "3ff5a518d53333d94d1ef47d8186d915",
     "semantic_hash": ""
   },
   "postcss.config.js": {
@@ -138,9 +138,9 @@
     "semantic_hash": ""
   },
   "src/components/door/LittleWorldDoor.tsx": {
-    "mtime": 1793884196.9265714,
-    "seen": 1794359420.74118,
-    "ast_hash": "8189c6e51f60a0ec3fb4326af264e57b",
+    "mtime": 1795180970.523425,
+    "seen": 1795181037.492493,
+    "ast_hash": "b452e1782170920c27be82da3dfddc05",
     "semantic_hash": ""
   },
   "src/components/notebook/NotebookView.tsx": {
@@ -216,9 +216,9 @@
     "semantic_hash": ""
   },
   "src/context/DoorContext.tsx": {
-    "mtime": 1793884197.2652485,
-    "seen": 1794359420.7412066,
-    "ast_hash": "dee8792c042db7e1b001fe2e6eaace4a",
+    "mtime": 1794915724.9815726,
+    "seen": 1794915864.3120706,
+    "ast_hash": "1bf47865b9344fc469e438e5b93c79d7",
     "semantic_hash": ""
   },
   "src/context/PlayerContext.tsx": {
@@ -228,9 +228,9 @@
     "semantic_hash": ""
   },
   "src/context/SiteContext.tsx": {
-    "mtime": 1794829736.89771,
-    "seen": 1794888335.269681,
-    "ast_hash": "ffe538edc40ee581a8fc2acc7b8922b7",
+    "mtime": 1794908818.9937243,
+    "seen": 1794915864.3121915,
+    "ast_hash": "6110148fc226939733c411dfa1319060",
     "semantic_hash": ""
   },
   "src/context/ToastContext.tsx": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/lib/appearance.ts": {
-    "mtime": 1794888201.5619948,
-    "seen": 1794888335.2698357,
-    "ast_hash": "9995461dab6661c1807ab030580686e0",
+    "mtime": 1794908809.503732,
+    "seen": 1794915864.3124366,
+    "ast_hash": "f909aef047e4608ab5c91f10c916ccf8",
     "semantic_hash": ""
   },
   "src/lib/bgEffects.ts": {
@@ -264,9 +264,9 @@
     "semantic_hash": ""
   },
   "src/lib/door.ts": {
-    "mtime": 1793884197.0874774,
-    "seen": 1794359420.7412217,
-    "ast_hash": "2cf1afdb054d4fd309ea6094e306ea5b",
+    "mtime": 1794908769.3891642,
+    "seen": 1794915864.3127003,
+    "ast_hash": "f8105b6ec7ac8019fe9a29954d20d038",
     "semantic_hash": ""
   },
   "src/lib/room.ts": {
@@ -528,9 +528,9 @@
     "semantic_hash": ""
   },
   "src/main.tsx": {
-    "mtime": 1794829588.40512,
-    "seen": 1794888335.2766767,
-    "ast_hash": "38aec20c74537047ee72e371ad094367",
+    "mtime": 1794903729.4922998,
+    "seen": 1794906207.3020835,
+    "ast_hash": "6799504aa434a3c206247d52bdbe8763",
     "semantic_hash": ""
   },
   "src/pages/BucketList.tsx": {
@@ -594,15 +594,15 @@
     "semantic_hash": ""
   },
   "src/pages/admin/Admin.tsx": {
-    "mtime": 1794878289.4384553,
-    "seen": 1794888335.2782514,
-    "ast_hash": "2763be1d0434f0afb05dbc235fb4dbee",
+    "mtime": 1794898343.5143585,
+    "seen": 1794906207.3040109,
+    "ast_hash": "4273771e0e9a007cab55272d2017ae6c",
     "semantic_hash": ""
   },
   "src/pages/admin/Settings.tsx": {
-    "mtime": 1794664903.3280063,
-    "seen": 1794705061.789761,
-    "ast_hash": "69ed60c8bbfd60f0d60a38884e65155d",
+    "mtime": 1794898053.7000427,
+    "seen": 1794906207.3040166,
+    "ast_hash": "d101953ac1e79dbcf8b76ea0f08c78f4",
     "semantic_hash": ""
   },
   "tailwind.config.js": {
@@ -648,21 +648,21 @@
     "semantic_hash": ""
   },
   "src/components/HeroSection.tsx": {
-    "mtime": 1794877988.1049497,
-    "seen": 1794888335.265049,
-    "ast_hash": "eb0ac5799fd7cde02875f65cfb79f72e",
+    "mtime": 1794888549.3612244,
+    "seen": 1794906207.28487,
+    "ast_hash": "6650763b08162ab06ff0251405bf214a",
     "semantic_hash": ""
   },
   "src/components/OpeningPreview.tsx": {
-    "mtime": 1794400480.9380395,
-    "seen": 1794705061.7791975,
-    "ast_hash": "6bab1fba70047b31cd135724f9d893b0",
+    "mtime": 1795177609.2990084,
+    "seen": 1795177951.0604682,
+    "ast_hash": "dfb26b3ebf33dff9fd51d69f9bfd0c16",
     "semantic_hash": ""
   },
   "src/components/OpeningSelector.tsx": {
-    "mtime": 1794406709.4315445,
-    "seen": 1794705061.7791996,
-    "ast_hash": "283f0711f8e596c3da27531167bf7488",
+    "mtime": 1794907367.9163015,
+    "seen": 1794915864.3088148,
+    "ast_hash": "f92f16720d4f929fe68daee8ab08100b",
     "semantic_hash": ""
   },
   "src/components/memory-map/MemoryDetails.tsx": {
@@ -714,15 +714,39 @@
     "semantic_hash": ""
   },
   "src/pages/admin/AnimationSettings.tsx": {
-    "mtime": 1794888062.5169346,
-    "seen": 1794888335.2782543,
-    "ast_hash": "9ad4207cc5c66fde1705cea27ed9e05d",
+    "mtime": 1794888394.6478136,
+    "seen": 1794906207.3040137,
+    "ast_hash": "b5f5efc0a9f35647cd71f250492e8165",
+    "semantic_hash": ""
+  },
+  "src/components/door/OpeningDispatcher.tsx": {
+    "mtime": 1795177436.2185235,
+    "seen": 1795177951.0639944,
+    "ast_hash": "036d06e0b98c17a76e8e31e2775b0c38",
+    "semantic_hash": ""
+  },
+  "src/lib/motion.ts": {
+    "mtime": 1794916681.036356,
+    "seen": 1795177951.0737846,
+    "ast_hash": "9f3e44d6c63ef523b9fa9bcb5e3e91bf",
+    "semantic_hash": ""
+  },
+  "src/lib/motion/orchestrator.ts": {
+    "mtime": 1795176981.113983,
+    "seen": 1795177951.0737903,
+    "ast_hash": "b308e27ba8784887b3b7d00502a4a987",
+    "semantic_hash": ""
+  },
+  "src/lib/motion/types.ts": {
+    "mtime": 1795176667.0577545,
+    "seen": 1795177951.073795,
+    "ast_hash": "36ff07dcc2202a92ac6d702eb3671734",
     "semantic_hash": ""
   },
   "package-lock.json": {
-    "mtime": 1794837564.2872047,
-    "seen": 1794888335.2790594,
-    "ast_hash": "18a5195492662e0f1ade24144698c51a",
+    "mtime": 1794909051.9708874,
+    "seen": 1794915864.3220458,
+    "ast_hash": "98b49330d5648ba0a1597bd160325f26",
     "semantic_hash": ""
   }
 }
