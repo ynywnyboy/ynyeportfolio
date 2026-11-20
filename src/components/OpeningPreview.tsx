@@ -46,6 +46,49 @@ export function OpeningPreview({ kind, speed, className }: Props) {
             <p className="text-sm text-stone-600">Gift box pops open</p>
           </div>
         )
+      case 'book':
+        return (
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative h-32 w-40" style={{ perspective: 1000 }}>
+              <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-20 rounded-r-lg bg-gradient-to-b from-blush-400 to-blush-500 shadow-xl" style={{ transformOrigin: 'left center' }} />
+              <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-20 rounded-l-lg bg-gradient-to-b from-blush-300 to-blush-400 shadow-inner" />
+              <div className="absolute left-1/2 top-4 -translate-x-1/2 h-[90%] w-[90%] max-w-[16rem] bg-cream-50 rounded-r shadow-inner" style={{ transformOrigin: 'left center' }} />
+            </div>
+            <p className="text-sm text-stone-600">Story book opens</p>
+          </div>
+        )
+      case 'polaroid':
+        return (
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative h-40 w-32 bg-white rounded-t-lg shadow-xl p-2 pb-10">
+              <div className="aspect-square bg-gradient-to-br from-stone-100 via-stone-200 to-stone-300 rounded-t-lg" />
+              <div className="mt-2 text-center text-xs text-stone-600 font-script">Developing...</div>
+            </div>
+            <p className="text-sm text-stone-600">Photo develops</p>
+          </div>
+        )
+      case 'curtain':
+        return (
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative h-32 w-40 overflow-hidden rounded-t-xl bg-gradient-to-b from-blush-900 via-blush-800 to-blush-900 shadow-2xl">
+              <div className="absolute left-0 top-0 h-full w-1/2 bg-gradient-to-r from-blush-900 via-blush-700 to-blush-900" style={{ transformOrigin: 'left center' }} />
+              <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-blush-900 via-blush-700 to-blush-900" style={{ transformOrigin: 'right center' }} />
+              <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-px bg-gradient-to-b from-transparent via-gold-400 to-transparent" />
+            </div>
+            <p className="text-sm text-stone-600">Curtains part</p>
+          </div>
+        )
+      case 'window':
+        return (
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative h-32 w-28" style={{ perspective: 1000 }}>
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-b from-stone-600 to-stone-700 shadow-2xl p-2" />
+              <div className="absolute left-2 top-2 h-[calc(100%-4px)] w-[calc(50%-3px)] rounded bg-gradient-to-b from-slate-900 to-slate-800" style={{ transformOrigin: 'left center' }} />
+              <div className="absolute right-2 top-2 h-[calc(100%-4px)] w-[calc(50%-3px)] rounded bg-gradient-to-b from-slate-900 to-slate-800" style={{ transformOrigin: 'right center' }} />
+            </div>
+            <p className="text-sm text-stone-600">Window opens</p>
+          </div>
+        )
       case 'liquid-glass':
         return (
           <div className="flex flex-col items-center gap-4">
