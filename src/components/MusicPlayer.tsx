@@ -29,7 +29,7 @@ export function MusicPlayer() {
   )
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 flex flex-col items-start gap-3 sm:bottom-6 sm:left-6">
+    <div className="fixed bottom-4 left-4 z-40 flex flex-col items-start gap-3 sm:bottom-6 sm:left-6">
       <AnimatePresence>
         {p.autoplayBlocked && !p.playing && !p.isEmbed && !open && (
           <motion.button

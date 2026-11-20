@@ -41,10 +41,11 @@ function FloatingPhotoCard({ config, img, index, visible, className }: {
   const reduced = useReducedMotion()
   const { appearance } = useSite()
   const imgAnim = appearance.animations.floatingImages
+  const cv = appearance.animations.conveyor
   const entry = 0.8 + index * 0.15
 
   // Enabled toggle + OS reduced-motion both collapse to a static card.
-  if (reduced || !imgAnim.enabled || !visible) {
+  if (reduced || !imgAnim.enabled || !visible || (cv.enabled && cv.loop)) {
     return (
       <div
         className="rounded-2xl shadow-lg overflow-hidden"
@@ -199,21 +200,15 @@ function MemoryConveyor({ images, config }: {
   const reduced = useReducedMotion()
   const { appearance } = useSite()
   const cv = appearance.animations.conveyor
-  // effective cycle: base duration (seconds) scaled by speed
   const cycleSec = Math.max(1, cv.duration / cv.speed)
 
-  // Fixed-size deque of 6 images — one per card slot, never unmount/remount.
-  // At each interval (8 s = one CSS cycle), one image exits and one enters,
-  // keeping the grid fully populated at all times — no visible refresh.
   const [batch, setBatch] = useState<Media[]>([])
   const queueRef = useRef<Media[]>([])
-  // Pool = ids of images not yet in the queue. Reset when depleted.
   const poolRef = useRef(new Set<string>())
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const CARD_H = useMemo(() => config[0]?.h + 4, [config])
 
-  // Seed: fill queue + populate initial pool.
   useEffect(() => {
     if (!images.length) return
     const shuffled = shuffle(images)
@@ -226,8 +221,6 @@ function MemoryConveyor({ images, config }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [images])
 
-  // Stream one image every CSS cycle. Cards are stable-keyed so no
-  // unmount/remount — only the `img` prop changes on a single slot per tick.
   useEffect(() => {
     if (reduced || !cv.enabled || !cv.loop || !images.length) return
     const CYCLE = cycleSec * 1000
@@ -238,15 +231,12 @@ function MemoryConveyor({ images, config }: {
 
         if (prev.length < 6 || !images.length) return prev
 
-        // Dequeue the first image (it scrolled off-screen during the cycle)
         q.shift()
 
-        // Build candidates: all images not currently in queue
         const curIds = new Set(q.map(m => m.id))
         const candidates = images.filter(m => !curIds.has(m.id))
 
         if (candidates.length === 0) {
-          // Pool exhausted — make everything available again
           poolRef.current = new Set(images.map(m => m.id))
           const fresh = shuffle(images)
           q.push(fresh[0])
@@ -279,7 +269,6 @@ function MemoryConveyor({ images, config }: {
     )
   }
 
-  // Three identical copies → CSS animates yPercent 0→100, snap-back invisible.
   const tripled = [...batch, ...batch, ...batch]
 
   return (
@@ -287,13 +276,15 @@ function MemoryConveyor({ images, config }: {
       className="relative overflow-hidden rounded-2xl"
       style={{ height: Math.ceil(tripled.length / 2) * CARD_H }}
     >
-      <div
+      <motion.div
         className="memory-conveyor-scroll grid grid-cols-2 gap-2 w-fit mx-auto"
-        style={{
-          animation: 'memory-conveyor linear infinite',
-          animationDuration: `${cycleSec}s`,
-          willChange: 'transform',
+        animate={{ y: [-CARD_H * batch.length, 0] }}
+        transition={{
+          duration: cycleSec,
+          repeat: cv.loop ? Infinity : 1,
+          ease: 'linear',
         }}
+        style={{ willChange: 'transform' }}
       >
         {tripled.map((img, i) => {
           const cfg = config[i % config.length]
@@ -307,7 +298,7 @@ function MemoryConveyor({ images, config }: {
                 <SafeImage
                   src={publicUrl(img.storage_path)}
                   alt={img.caption || ''}
-                  className="h-full w-full object-cover transition-all duration-300 ease-out"
+                  className="h-full w-full object-contain transition-all duration-300 ease-out"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blush-200/60 to-lilac-200/60 dark:from-night-700 dark:to-night-600">
@@ -317,7 +308,7 @@ function MemoryConveyor({ images, config }: {
             </div>
           )
         })}
-      </div>
+      </motion.div>
     </div>
   )
 }
