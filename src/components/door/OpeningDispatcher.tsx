@@ -1217,10 +1217,10 @@ export function OpeningDispatcher({ openingKind, onDone, onEnter }: OpeningDispa
             <div aria-hidden className="pointer-events-none absolute inset-0"
               style={{ background: 'radial-gradient(ellipse at 50% 55%, rgba(255,226,170,0.45), transparent 60%)' }} />
 
-            {/* Opening animation */}
             <motion.div
               className="relative z-10"
-              animate={{ opacity: phase === 'opening' ? 1 : 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.6 }}
             >
               {renderOpening()}
