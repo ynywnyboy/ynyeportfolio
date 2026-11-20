@@ -87,20 +87,6 @@ export function OpeningDispatcher({ openingKind, onDone, onEnter }: OpeningDispa
           duration={SWING}
         />
         {phase === 'opening' && !reduced && <DoorBurst />}
-        <motion.p
-          className="relative z-10 text-sm font-medium tracking-wide text-blush-600 dark:text-blush-200 mt-6"
-          animate={{ opacity: phase === 'idle' ? 1 : 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          Tap the door to enter ♡
-        </motion.p>
-        <button
-          type="button"
-          onClick={open}
-          disabled={phase !== 'idle'}
-          autoFocus
-          className="absolute inset-0 z-30 cursor-pointer outline-none disabled:cursor-default"
-        />
       </div>
     )
   }
