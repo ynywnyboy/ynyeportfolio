@@ -20,6 +20,7 @@ const GOLD_DEEP = '#b98a3e'
  * on its left hinges. The whole door is one real <button>, so it works with touch, mouse and keyboard.
  */
 export function LittleWorldDoor({ open, reduced, onOpen, dateLine, duration = 2.5 }: Props) {
+  console.log('LittleWorldDoor open state:', open)
   return (
     <div className="relative flex flex-col items-center">
       {/* halo */}
